@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "postinstall": "concurrently -n server,client \"npm --prefix server install\" \"npm --prefix client install\"",
+    "start": "concurrently -n server,client \"npm --prefix server start\" \"npm --prefix client start\"",
+    "build": "concurrently -n server,client \"npm --prefix server run build\" \"npm --prefix client run build\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.1.0",
+    "prettier": "^2.6.2"
+  }
+}
