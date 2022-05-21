@@ -9,7 +9,7 @@ const router = Router();
 
 router.post("/api/login", login);
 router.get("/api/auth", auth);
-router.get("/api/user", user);
+router.get("/api/user", [authenticate], user);
 router.get("/api/streams", [authenticate], streams);
 
 export default router;
