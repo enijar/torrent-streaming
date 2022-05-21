@@ -1,7 +1,8 @@
 import { randomBytes } from "crypto";
+import * as fs from "fs/promises";
+import * as path from "path";
 import type { Request, Response } from "express";
 import { compare } from "bcrypt";
-import * as authorisedEmails from "../../data/authorised-emails.json";
 import mail from "../services/mail";
 import config from "../config";
 import User from "../entities/user";
@@ -9,8 +10,17 @@ import User from "../entities/user";
 export default async function login(req: Request, res: Response) {
   const { email = "" } = req.body;
 
+  const authorisedEmailsFile = path.join(
+    config.paths.data,
+    "authorised-emails.json"
+  );
+
+  const authorisedEmails = JSON.parse(
+    await fs.readFile(authorisedEmailsFile, "utf-8")
+  );
+
   const hashResults = await Promise.all(
-    authorisedEmails.map((authorisedEmail) => {
+    authorisedEmails.map((authorisedEmail: string) => {
       return compare(email, authorisedEmail);
     })
   );
