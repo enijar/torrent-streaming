@@ -11,7 +11,7 @@ const authService = {
     return sign({ uuid: user.uuid }, config.jwt.secret, { expiresIn: "30d" });
   },
 
-  verify(token: string = ""): Promise<TokenData> {
+  verify(token: string = ""): TokenData {
     // @ts-ignore
     return verify(token, config.jwt.secret);
   },

@@ -6,6 +6,7 @@ type Response = {
   messages: Messages;
   errors: Errors;
   ok: boolean;
+  status: number;
 };
 
 type Method = "get" | "post";
@@ -31,6 +32,7 @@ async function request(
       messages: json?.messages ?? {},
       errors: json?.errors ?? {},
       ok: res.ok,
+      status: res.status,
     };
   } catch (err) {
     console.error(err);
@@ -39,6 +41,7 @@ async function request(
       messages: {},
       errors: { server: "Server error" },
       ok: false,
+      status: 500,
     };
   }
 }

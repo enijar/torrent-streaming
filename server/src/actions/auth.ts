@@ -16,5 +16,5 @@ export default async function auth(req: Request, res: Response) {
 
   req.cookies.set("authToken", authService.sign(user));
 
-  res.redirect(`${config.appUrl}/dashboard`);
+  res.redirect(`${config.appUrl}/streams`);
 }

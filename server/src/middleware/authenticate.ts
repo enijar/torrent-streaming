@@ -1,7 +1,7 @@
 import { JsonWebTokenError } from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../entities/user";
-import authService from "../services/auth";
+import authService from "../services/auth-service";
 
 export default async function authenticate(
   req: Request,
@@ -10,7 +10,7 @@ export default async function authenticate(
 ) {
   try {
     const authToken = req.cookies.get("authToken");
-    const { uuid } = await authService.verify(authToken);
+    const { uuid } = authService.verify(authToken);
 
     const user = await User.findOne({ where: { uuid } });
 

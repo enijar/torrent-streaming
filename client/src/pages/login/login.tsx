@@ -1,14 +1,34 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginWrapper } from "@/pages/login/login.styles";
 import { Message, Error } from "@/styles/elements";
 import useForm from "@/hooks/use-form";
 import { Messages, Errors } from "@/types";
 import api from "@/services/api";
+import Loading from "@/components/loading/loading";
 
 export default function Login() {
   const [messages, setMessages] = React.useState<Messages>({});
   const [errors, setErrors] = React.useState<Errors>({});
   const [submitting, setSubmitting] = React.useState(false);
+
+  const [authenticating, setAuthenticating] = React.useState(true);
+
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    api
+      .get("/api/user")
+      .then((res) => {
+        if (res.status !== 200) {
+          return setAuthenticating(false);
+        }
+        navigate("/streams");
+      })
+      .catch(() => {
+        setAuthenticating(false);
+      });
+  }, [navigate]);
 
   const form = useForm(async (formData) => {
     if (submitting) return;
@@ -44,6 +64,8 @@ export default function Login() {
       setSubmitting(false);
     }
   });
+
+  if (authenticating) return <Loading />;
 
   return (
     <LoginWrapper>
