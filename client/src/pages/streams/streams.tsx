@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { StreamsWrapper } from "@/pages/streams/streams.styles";
 import api from "@/services/api";
+import Loading from "@/components/loading/loading";
 
 export default function Streams() {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ export default function Streams() {
         setLoading(false);
       });
   }, [navigate]);
+
+  if (loading) return <Loading />;
 
   return (
     <StreamsWrapper>
