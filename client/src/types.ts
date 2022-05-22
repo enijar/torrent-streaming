@@ -6,16 +6,10 @@ export type Messages = {
   [message: string]: string;
 };
 
-export type StreamCategory = {
-  uuid: string;
-  type: string;
-  label: string;
-};
-
 export type Stream = {
   uuid: string;
-  categories: StreamCategory[];
+  genres: string[];
   title: string;
   synopsis: string;
-  poster: string;
+  largeCoverImage: string;
 };

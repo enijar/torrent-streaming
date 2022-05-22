@@ -43,9 +43,4 @@ export const AppReset = createGlobalStyle`
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-size: 1.5em;
-    text-transform: uppercase;
-  }
 `;

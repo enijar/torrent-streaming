@@ -8,7 +8,9 @@ export const LoginWrapper = styled.main`
   place-content: center;
 
   h1 {
-    margin-bottom: 1rem;
+    margin-block-end: 1rem;
+    font-size: 1.5em;
+    text-transform: uppercase;
   }
 
   form {
@@ -31,7 +33,7 @@ export const LoginWrapper = styled.main`
     border-radius: 0.25em;
 
     :last-child {
-      margin-bottom: 0;
+      margin-block-end: 0;
     }
   }
 

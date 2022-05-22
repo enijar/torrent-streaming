@@ -2,6 +2,8 @@
 
 Watch torrents online. Streams them directly to your browser.
 
+![Preview](./misc/preview.png)
+
 ### Getting Started
 
 ```shell
