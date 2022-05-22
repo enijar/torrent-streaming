@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "movie_count": 42661,
+    "limit": 50,
+    "page_number": 1
+  },
+  "@meta": {
+    "server_time": 1653219390,
+    "server_timezone": "CET",
+    "api_version": 2,
+    "execution_time": "0.06 ms"
+  }
+}

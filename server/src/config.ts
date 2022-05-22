@@ -1,6 +1,7 @@
 import * as path from "path";
 import env from "../env";
 import User from "./entities/user";
+import Stream from "./entities/stream";
 
 const paths = {
   emails: path.resolve(__dirname, "emails"),
@@ -21,7 +22,7 @@ export default {
     username: env.database.username,
     password: env.database.password,
     storage: env.database.storage,
-    entities: [User],
+    entities: [User, Stream],
   },
   jwt: {
     secret: env.jwt.secret,

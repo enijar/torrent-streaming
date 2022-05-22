@@ -58,4 +58,7 @@ server {
 ```shell
 # Add an email to the list of authorised emails
 npm --prefix server run add-authorised-email username@domain.tld
+
+# Add and update streams in database from YTS API
+npm --prefix server run update-movies
 ```
