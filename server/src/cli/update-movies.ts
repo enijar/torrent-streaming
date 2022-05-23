@@ -51,6 +51,7 @@ async function fetchData(page: number): Promise<Data> {
         genres: movie.genres,
         synopsis: movie.synopsis,
         youTubeTrailerCode: movie.yt_trailer_code,
+        imdbCode: movie.imdb_code,
         largeCoverImage: movie.large_cover_image,
         torrents,
       };
@@ -80,6 +81,7 @@ async function fetchData(page: number): Promise<Data> {
           "genres",
           "synopsis",
           "youTubeTrailerCode",
+          "imdbCode",
           "largeCoverImage",
           "torrents",
         ],

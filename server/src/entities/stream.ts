@@ -37,6 +37,9 @@ export default class Stream extends Model {
   youTubeTrailerCode: string;
 
   @Column
+  imdbCode: string;
+
+  @Column
   largeCoverImage: string;
 
   @Column({ type: DataType.JSON })
