@@ -24,7 +24,6 @@ export default function Stream() {
         }
         setLoading(false);
         setStream(res.data?.stream ?? null);
-        console.log(res.data);
       })
       .catch((err) => {
         console.error(err);
@@ -33,6 +32,8 @@ export default function Stream() {
   }, [navigate, uuid]);
 
   if (loading) return <Loading />;
+
+  if (stream === null) return <h3>Stream Not Found</h3>;
 
   return (
     <StreamWrapper>
