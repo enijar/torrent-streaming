@@ -40,6 +40,11 @@ export default async function login(req: Request, res: Response) {
     user = await User.create({ email, loginToken });
   }
 
+  if (user.loginToken === null) {
+    const loginToken = randomBytes(48).toString("hex");
+    user = await user.update({ loginToken });
+  }
+
   await mail.send({
     template: "login",
     message: {
