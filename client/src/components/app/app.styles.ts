@@ -43,4 +43,8 @@ export const AppReset = createGlobalStyle`
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+  a {
+    text-decoration: none;
+  }
 `;

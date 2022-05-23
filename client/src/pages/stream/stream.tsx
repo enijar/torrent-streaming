@@ -1,46 +1,42 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { StreamsWrapper } from "@/pages/streams/streams.styles";
+import { useNavigate, useParams } from "react-router-dom";
+import { StreamWrapper } from "@/pages/stream/stream.styles";
 import api from "@/services/api";
 import { Stream as StreamType } from "@/types";
 import Loading from "@/components/loading/loading";
-import Stream from "@/components/stream/stream";
+import YoutubeEmbed from "@/components/youtube-embed/youtube-embed";
 
-export default function Streams() {
+export default function Stream() {
+  const { uuid } = useParams();
+
   const navigate = useNavigate();
 
-  const [streams, setStreams] = React.useState<StreamType[]>([]);
+  const [stream, setStream] = React.useState<StreamType>(null);
 
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     api
-      .get("/api/streams")
+      .get(`/api/stream/${uuid}`)
       .then((res) => {
         if (res.status === 401) {
           return navigate("/");
         }
         setLoading(false);
-        setStreams(res.data?.streams ?? []);
+        setStream(res.data?.stream ?? null);
         console.log(res.data);
       })
       .catch((err) => {
         console.error(err);
         setLoading(false);
       });
-  }, [navigate]);
+  }, [navigate, uuid]);
 
   if (loading) return <Loading />;
 
   return (
-    <StreamsWrapper>
-      {streams.map((stream) => {
-        return (
-          <Link key={stream.uuid} to={`/stream/${stream.uuid}`}>
-            <Stream {...stream} />
-          </Link>
-        );
-      })}
-    </StreamsWrapper>
+    <StreamWrapper>
+      <YoutubeEmbed code={stream.youTubeTrailerCode} />
+    </StreamWrapper>
   );
 }

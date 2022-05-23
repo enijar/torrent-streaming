@@ -12,4 +12,6 @@ export type Stream = {
   title: string;
   synopsis: string;
   largeCoverImage: string;
+  youTubeTrailerCode: string;
+  imdbCode: string;
 };
