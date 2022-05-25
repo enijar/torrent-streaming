@@ -4,7 +4,8 @@ import { StreamWrapper } from "@/pages/stream/stream.styles";
 import api from "@/services/api";
 import { Stream as StreamType } from "@/types";
 import Loading from "@/components/loading/loading";
-import YoutubeEmbed from "@/components/youtube-embed/youtube-embed";
+import VideoEmbed from "@/components/video-embed/video-embed";
+import config from "@/config";
 
 export default function Stream() {
   const { uuid } = useParams();
@@ -37,7 +38,7 @@ export default function Stream() {
 
   return (
     <StreamWrapper>
-      <YoutubeEmbed code={stream.youTubeTrailerCode} />
+      <VideoEmbed src={`${config.apiUrl}/api/watch/${stream.uuid}`} />
     </StreamWrapper>
   );
 }
