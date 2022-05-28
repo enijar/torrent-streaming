@@ -1,39 +1,46 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { StreamsWrapper } from "@/pages/streams/streams.styles";
-import api from "@/services/api";
 import { Stream as StreamType } from "@/types";
-import Loading from "@/components/loading/loading";
 import Stream from "@/components/stream/stream";
+import stream from "@/services/stream";
 
 export default function Streams() {
   const navigate = useNavigate();
 
   const [streams, setStreams] = React.useState<StreamType[]>([]);
 
-  const [loading, setLoading] = React.useState(true);
+  const pageRef = React.useRef(1);
+  const loadingRef = React.useRef(false);
 
-  React.useEffect(() => {
-    api
-      .get("/api/streams")
-      .then((res) => {
-        if (res.status === 401) {
-          return navigate("/");
-        }
-        setLoading(false);
-        setStreams(res.data?.streams ?? []);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
+  const updateStreams = React.useCallback(() => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    stream.streamsFromPage(pageRef.current).then((streams) => {
+      if (streams === false) return navigate("/");
+      if (streams.length === 0) return;
+      pageRef.current++;
+      setStreams((currentStreams) => {
+        return [...currentStreams, ...streams];
       });
+    });
   }, [navigate]);
 
-  if (loading) return <Loading />;
+  React.useEffect(() => {
+    loadingRef.current = false;
+  }, [streams]);
+
+  React.useEffect(updateStreams, [updateStreams]);
+
+  const onScroll = React.useCallback((event: React.UIEvent) => {
+    const target = event.currentTarget;
+    const maxScrollTop = target.scrollHeight - target.clientHeight;
+    const progress = target.scrollTop / maxScrollTop;
+    if (progress >= 0.95) updateStreams();
+  }, []);
 
   return (
-    <StreamsWrapper>
+    <StreamsWrapper onScroll={onScroll}>
       {streams.map((stream) => {
         return (
           <Link key={stream.uuid} to={`/stream/${stream.uuid}`}>
