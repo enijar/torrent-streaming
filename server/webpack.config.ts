@@ -3,6 +3,8 @@ import * as webpack from "webpack";
 import * as nodeExternals from "webpack-node-externals";
 import * as CopyPlugin from "copy-webpack-plugin";
 
+const NodemonPlugin = require("nodemon-webpack-plugin");
+
 require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 
 const DEV_MODE = process.env.NODE_ENV === "development";
@@ -86,8 +88,8 @@ const config = {
 };
 
 export default () => {
-  if (!DEV_MODE) {
-    // Modify config for production
+  if (DEV_MODE) {
+    config.plugins.push(new NodemonPlugin());
   }
   return config;
 };

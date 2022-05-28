@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "start": "NODE_ENV=development nodemon --watch env.ts --watch src src/index.ts",
-    "build": "NODE_ENV=production webpack --mode production",
+    "start": "webpack --mode development --watch",
+    "build": "webpack --mode production",
     "add-authorised-email": "ts-node src/cli/add-authorised-email.ts",
     "update-movies": "ts-node src/cli/update-movies.ts"
   },
@@ -21,11 +21,13 @@
     "@types/pump": "^1.1.1",
     "@types/range-parser": "^1.2.4",
     "@types/validator": "^13.7.2",
+    "@types/webpack-hot-middleware": "^2.25.6",
     "@types/webpack-node-externals": "^2.5.3",
     "@types/webtorrent": "^0.109.3",
     "copy-webpack-plugin": "^10.2.4",
     "dotenv": "^16.0.1",
     "nodemon": "^2.0.16",
+    "nodemon-webpack-plugin": "^4.7.1",
     "prettier": "^2.6.2",
     "ts-loader": "^9.3.0",
     "ts-node": "^10.7.0",

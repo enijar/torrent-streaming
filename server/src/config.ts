@@ -9,6 +9,7 @@ const paths = {
 };
 
 export default {
+  env: process.env.NODE_ENV ?? "production",
   port: parseInt(process.env.PORT ?? "3000"),
   apiUrl: process.env.API_URL ?? "http://localhost:3000",
   appUrl: process.env.APP_URL ?? "http://localhost:8080",

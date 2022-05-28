@@ -16,6 +16,7 @@ export default class Stream extends Model {
   apiId: number;
 
   @Index({ name: "streams_title" })
+  @Column
   title: string;
 
   @Column
