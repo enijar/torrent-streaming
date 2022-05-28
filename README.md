@@ -7,8 +7,8 @@ Watch video torrents online. Streams them directly to your browser.
 ### Getting Started
 
 ```shell
-cp client/env.example.ts client/env.ts
-cp server/env.example.ts server/env.ts
+cp client/.env.example client/.env
+cp server/.env.example server/.env
 
 npm install
 npm start
