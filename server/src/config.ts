@@ -23,7 +23,7 @@ export default {
     username: process.env.DATABASE_USERNAME ?? "torrent-streaming",
     password: process.env.DATABASE_PASSWORD ?? "secret",
     storage: process.env.DATABASE_STORAGE ?? ".cache/database.sqlite",
-    entities: [Stream, User],
+    entities: [User, Stream],
   },
   jwt: {
     secret: process.env.JWT_SECRET ?? "secret",
