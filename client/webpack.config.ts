@@ -9,7 +9,9 @@ const HtmlInlineScriptPlugin = require("html-inline-script-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-require("dotenv").config();
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+
+console.log("process.env.API_URL", process.env.API_URL);
 
 const DEV_MODE = process.env.NODE_ENV === "development";
 const SRC_DIR = path.resolve(__dirname, "src");
