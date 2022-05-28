@@ -24,4 +24,4 @@ RUN for s in $(echo $ENV_VARS | jq -r "to_entries|map(\"\(.key)=\(.value|tostrin
 
 RUN npm run build
 
-ENTRYPOINT serve -l tcp://0.0.0.0:$PORT build
+ENTRYPOINT serve -s -l tcp://0.0.0.0:$PORT build
