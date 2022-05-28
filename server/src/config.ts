@@ -1,5 +1,4 @@
 import * as path from "path";
-import env from "../env";
 import User from "./entities/user";
 import Stream from "./entities/stream";
 
@@ -9,35 +8,35 @@ const paths = {
 };
 
 export default {
-  port: env.port,
-  apiUrl: env.apiUrl,
-  appUrl: env.appUrl,
-  corsOrigins: env.corsOrigins,
-  bcryptRounds: env.bcryptRounds,
+  port: process.env.PORT,
+  apiUrl: process.env.API_URL,
+  appUrl: process.env.APP_URL,
+  corsOrigins: process.env.CORS_ORIGINS.split(","),
+  bcryptRounds: process.env.BCRYPT_ROUNDS,
   paths,
   database: {
-    host: env.database.host,
-    name: env.database.name,
-    dialect: env.database.dialect,
-    username: env.database.username,
-    password: env.database.password,
-    storage: env.database.storage,
+    host: process.env.DATABASE_HOST,
+    name: process.env.DATABASE_NAME,
+    dialect: process.env.DATABASE_DIALECT,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    storage: process.env.DATABASE_STORAGE,
     entities: [User, Stream],
   },
   jwt: {
-    secret: env.jwt.secret,
+    secret: process.env.JWT_SECRET,
   },
   email: {
-    preview: env.email.preview,
-    send: env.email.send,
-    from: env.email.from,
+    preview: process.env.EMAIL_PREVIEW,
+    send: process.env.EMAIL_SEND,
+    from: process.env.EMAIL_FROM,
     templates: paths.emails,
     transport: {
-      host: env.email.smtp.host,
-      port: env.email.smtp.port,
+      host: process.env.EMAIL_SMTP_HOST,
+      port: process.env.EMAIL_SMTP_PORT,
       auth: {
-        user: env.email.smtp.username,
-        pass: env.email.smtp.password,
+        user: process.env.EMAIL_SMTP_USERNAME,
+        pass: process.env.EMAIL_SMTP_PASSWORD,
       },
     },
   },

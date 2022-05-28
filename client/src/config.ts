@@ -1,5 +1,4 @@
-import env from "../env";
-
 export default {
-  apiUrl: env.apiUrl,
+  env: process.env.NODE_ENV ?? "production",
+  apiUrl: process.env.API_URL ?? "http://localhost:3000",
 };

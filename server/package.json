@@ -23,6 +23,7 @@
     "@types/webpack-node-externals": "^2.5.3",
     "@types/webtorrent": "^0.109.3",
     "copy-webpack-plugin": "^10.2.4",
+    "dotenv": "^16.0.1",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "ts-loader": "^9.3.0",
