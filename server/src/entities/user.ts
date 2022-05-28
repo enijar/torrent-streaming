@@ -2,7 +2,7 @@ import { Column, DataType, Index, Model, Table } from "sequelize-typescript";
 
 @Table({ tableName: "users" })
 export default class User extends Model {
-  @Index({ name: "uuid", unique: true })
+  @Index({ name: "users_uuid", unique: true })
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -10,7 +10,7 @@ export default class User extends Model {
   })
   uuid: string;
 
-  @Index({ name: "email", unique: true })
+  @Index({ name: "users_email", unique: true })
   @Column
   email: string;
 

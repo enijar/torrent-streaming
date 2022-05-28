@@ -3,7 +3,7 @@ import * as webpack from "webpack";
 import * as nodeExternals from "webpack-node-externals";
 import * as CopyPlugin from "copy-webpack-plugin";
 
-require("dotenv").config();
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 
 const DEV_MODE = process.env.NODE_ENV === "development";
 const SRC_DIR = path.resolve(__dirname, "src");

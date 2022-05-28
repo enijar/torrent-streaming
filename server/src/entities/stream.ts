@@ -3,7 +3,7 @@ import { Torrent } from "../types";
 
 @Table({ tableName: "streams" })
 export default class Stream extends Model {
-  @Index({ name: "uuid", unique: true })
+  @Index({ name: "streams_uuid", unique: true })
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -11,11 +11,11 @@ export default class Stream extends Model {
   })
   uuid: string;
 
-  @Index({ name: "apiId", unique: true })
+  @Index({ name: "streams_apiId", unique: true })
   @Column
   apiId: number;
 
-  @Column
+  @Index({ name: "streams_title" })
   title: string;
 
   @Column
