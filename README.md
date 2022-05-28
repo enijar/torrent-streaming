@@ -1,6 +1,6 @@
 # Torrent Streaming
 
-Watch torrents online. Streams them directly to your browser.
+Watch video torrents online. Streams them directly to your browser.
 
 ![Preview](./misc/preview.png)
 
