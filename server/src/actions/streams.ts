@@ -1,8 +1,8 @@
 import type { Response } from "express";
+import { FindOptions, Op } from "sequelize";
 import type { PrivateRequest } from "../types";
 import Stream from "../entities/stream";
 import paginate from "../services/paginate";
-import { FindOptions, Op } from "sequelize";
 
 export default async function streams(req: PrivateRequest, res: Response) {
   const { limit, offset } = paginate(req);
