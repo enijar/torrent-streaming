@@ -2,10 +2,24 @@ import type { Response } from "express";
 import type { PrivateRequest } from "../types";
 import Stream from "../entities/stream";
 import paginate from "../services/paginate";
+import { FindOptions, Op } from "sequelize";
 
 export default async function streams(req: PrivateRequest, res: Response) {
   const { limit, offset } = paginate(req);
+  const q = String(req.query?.q ?? "").trim();
+
+  let query: FindOptions["where"] = undefined;
+
+  if (q.length > 0) {
+    query = {
+      title: {
+        [Op.like]: `%${q}%`,
+      },
+    };
+  }
+
   const streams = await Stream.findAll({
+    where: query,
     order: [
       ["rating", "desc"],
       ["createdAt", "asc"],

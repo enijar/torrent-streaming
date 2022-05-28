@@ -1,9 +1,14 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { StreamsWrapper } from "@/pages/streams/streams.styles";
+import {
+  StreamsList,
+  StreamsContainer,
+  StreamsWrapper,
+} from "@/pages/streams/streams.styles";
 import { Stream as StreamType } from "@/types";
 import Stream from "@/components/stream/stream";
 import stream from "@/services/stream";
+import Search from "@/components/search/search";
 
 export default function Streams() {
   const navigate = useNavigate();
@@ -12,11 +17,12 @@ export default function Streams() {
 
   const pageRef = React.useRef(1);
   const loadingRef = React.useRef(false);
+  const queryRef = React.useRef("");
 
   const updateStreams = React.useCallback(() => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    stream.streamsFromPage(pageRef.current).then((streams) => {
+    stream.streams(pageRef.current, queryRef.current).then((streams) => {
       if (streams === false) return navigate("/");
       if (streams.length === 0) return;
       pageRef.current++;
@@ -39,15 +45,30 @@ export default function Streams() {
     if (progress >= 0.95) updateStreams();
   }, []);
 
+  const onSearch = React.useCallback(
+    (query: string) => {
+      pageRef.current = 1;
+      queryRef.current = query;
+      setStreams([]);
+      updateStreams();
+    },
+    [updateStreams]
+  );
+
   return (
     <StreamsWrapper onScroll={onScroll}>
-      {streams.map((stream) => {
-        return (
-          <Link key={stream.uuid} to={`/stream/${stream.uuid}`}>
-            <Stream {...stream} />
-          </Link>
-        );
-      })}
+      <StreamsContainer>
+        <Search onChange={onSearch} />
+        <StreamsList>
+          {streams.map((stream) => {
+            return (
+              <Link key={stream.uuid} to={`/stream/${stream.uuid}`}>
+                <Stream {...stream} />
+              </Link>
+            );
+          })}
+        </StreamsList>
+      </StreamsContainer>
     </StreamsWrapper>
   );
 }

@@ -5,6 +5,8 @@ export const AppReset = createGlobalStyle`
     --root-size: 3vh;
     --root-min: 16px;
     --root-max: 20px;
+    --color-light: #f0f0f0;
+    --color-dark: #121212;
   }
 
   @media (orientation: portrait) {
@@ -35,7 +37,8 @@ export const AppReset = createGlobalStyle`
     text-rendering: geometricPrecision;
     font-weight: normal;
     line-height: 1em;
-    color: #f0f0f0;
+    color: var(--color-light);
+    background-color: var(--color-dark);
     overflow: hidden;
   }
 
