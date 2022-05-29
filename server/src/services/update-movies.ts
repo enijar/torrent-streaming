@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import database from "./database";
 import Stream from "../entities/stream";
 import { Torrent } from "../types";
 
@@ -82,26 +81,11 @@ async function fetchData(page: number): Promise<Data> {
 
 export default async function updateMovies(page: number = 1) {
   try {
-    await database.sync({ alter: true });
-
     console.log(`Page ${page}`);
 
     const data = await fetchData(page);
 
-    await Stream.bulkCreate(data.streams, {
-      updateOnDuplicate: [
-        "title",
-        "year",
-        "rating",
-        "duration",
-        "genres",
-        "synopsis",
-        "youTubeTrailerCode",
-        "imdbCode",
-        "largeCoverImage",
-        "torrents",
-      ],
-    });
+    await Promise.all(data.streams.map((stream) => Stream.upsert(stream)));
 
     if (data.nextPage !== null) {
       await updateMovies(data.nextPage);

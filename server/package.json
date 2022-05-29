@@ -3,8 +3,8 @@
   "scripts": {
     "start": "webpack --mode development --watch",
     "build": "webpack --mode production",
-    "add-authorised-email": "ts-node src/cli/add-authorised-email.ts",
-    "update-movies": "ts-node src/cli/update-movies.ts"
+    "add-authorised-email": "node build/cli.js add-authorised-email",
+    "update-movies": "node build/cli.js update-movies"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

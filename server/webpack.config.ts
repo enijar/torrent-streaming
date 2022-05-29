@@ -18,7 +18,10 @@ const config = {
   mode: DEV_MODE ? "development" : "production",
   target: "node",
   stats: "minimal",
-  entry: path.join(SRC_DIR, "index.ts"),
+  entry: {
+    index: path.join(SRC_DIR, "index.ts"),
+    cli: path.join(SRC_DIR, "cli.ts"),
+  },
   module: {
     rules: [
       {
@@ -79,7 +82,7 @@ const config = {
     extensions: [".js", ".ts"],
   },
   output: {
-    filename: "index.js",
+    filename: "[name].js",
     path: BUILD_DIR,
     clean: true,
   },

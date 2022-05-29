@@ -13,11 +13,6 @@ const database = new Sequelize({
 });
 
 export async function init() {
-  await Promise.all(
-    config.database.entities.map((entity) => {
-      return entity.sync({ alter: true });
-    })
-  );
   await database.sync({ alter: true });
 }
 
