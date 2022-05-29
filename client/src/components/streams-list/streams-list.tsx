@@ -51,17 +51,32 @@ export default function StreamsList({ page, query, onLoading }: Props) {
         setStreams(streams);
       } else {
         setStreams((currentStreams) => {
-          return [...currentStreams, ...streams];
+          const nextStreams: StreamType[] = [];
+          const mixedStreams = [...currentStreams, ...streams];
+          // Make sure there are no duplicates
+          for (let i = 0, length = mixedStreams.length; i < length; i++) {
+            const stream = mixedStreams[i];
+            const index = nextStreams.findIndex((nextStream) => {
+              return nextStream.uuid === stream.uuid;
+            });
+            if (index === -1) {
+              nextStreams.push(stream);
+            }
+          }
+          return nextStreams;
         });
       }
-      lastPageRef.current = page;
-      lastQueryRef.current = query;
-      if (onLoadingRef.current) {
-        onLoadingRef.current(false);
-      }
-      loadingRef.current = false;
     });
   }, [page, query]);
+
+  React.useEffect(() => {
+    loadingRef.current = false;
+    if (onLoadingRef.current) {
+      onLoadingRef.current(false);
+    }
+    lastPageRef.current = page;
+    lastQueryRef.current = query;
+  }, [streams]);
 
   return (
     <StreamsListWrapper>
