@@ -1,18 +1,10 @@
 import config from "./config";
-import database from "./services/database";
-import cron from "./services/cron";
+import { init } from "./services/database";
 import app from "./services/app";
 
 (async () => {
   try {
-    await Promise.all(
-      config.database.entities.map((entity) => {
-        return entity.sync({ alter: true });
-      })
-    );
-    await database.sync({ alter: true });
-
-    cron();
+    await init();
 
     app.listen(config.port, () => {
       console.log(`Server running: http://localhost:${config.port}`);
