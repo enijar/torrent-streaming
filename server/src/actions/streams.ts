@@ -13,7 +13,7 @@ export default async function streams(req: PrivateRequest, res: Response) {
   if (q.length > 0) {
     query = {
       title: {
-        [Op.like]: `%${q}%`,
+        [Op.like]: `%${q.replace(/\s+/g, "%")}%`,
       },
     };
   }

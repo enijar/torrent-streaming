@@ -1,9 +1,14 @@
-import { Column, DataType, Index, Model, Table } from "sequelize-typescript";
+import { Column, DataType, Model, Table } from "sequelize-typescript";
 import { Torrent } from "../types";
 
-@Table({ tableName: "streams" })
+@Table({
+  tableName: "streams",
+  indexes: [
+    { name: "streams_index_apiId", unique: true, fields: ["apiId"] },
+    { name: "streams_index_title", fields: ["title"] },
+  ],
+})
 export default class Stream extends Model {
-  @Index({ name: "streams_uuid", unique: true })
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -11,11 +16,9 @@ export default class Stream extends Model {
   })
   uuid: string;
 
-  @Index({ name: "streams_apiId", unique: true })
   @Column
   apiId: number;
 
-  @Index({ name: "streams_title" })
   @Column
   title: string;
 
