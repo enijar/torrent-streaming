@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LoginWrapper } from "@/pages/login/login.styles";
 import { Message, Error } from "@/styles/elements";
 import useForm from "@/hooks/use-form";
-import { Messages, Errors } from "@/types";
+import { Messages, Errors, Request } from "@/types";
 import api from "@/services/api";
 import Loading from "@/components/loading/loading";
 
@@ -16,18 +16,20 @@ export default function Login() {
 
   const navigate = useNavigate();
 
+  const requestRef = React.useRef<Request>(null);
+
   React.useEffect(() => {
-    api
-      .get("/api/user")
-      .then((res) => {
-        if (res.status !== 200) {
-          return setAuthenticating(false);
-        }
-        navigate("/streams");
-      })
-      .catch(() => {
-        setAuthenticating(false);
-      });
+    if (requestRef.current !== null) {
+      requestRef.current.abort();
+    }
+    const req = api.get("/api/user");
+    requestRef.current = req;
+    req.send().then((res) => {
+      if (res.status !== 200) {
+        return setAuthenticating(false);
+      }
+      navigate("/streams");
+    });
   }, [navigate]);
 
   const form = useForm(async (formData) => {
@@ -55,7 +57,8 @@ export default function Login() {
     }
 
     try {
-      const res = await api.post("/api/login", { email });
+      const req = await api.post("/api/login", { email });
+      const res = await req.send();
       setMessages(res.messages);
       setErrors(res.errors);
     } catch (err) {

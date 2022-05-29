@@ -15,3 +15,13 @@ export type Stream = {
   youTubeTrailerCode: string;
   imdbCode: string;
 };
+
+export type Response = {
+  data: any;
+  messages: Messages;
+  errors: Errors;
+  ok: boolean;
+  status: number;
+};
+
+export type Request = { abort: () => void; send: () => Promise<Response> };

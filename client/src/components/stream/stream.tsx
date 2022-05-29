@@ -10,6 +10,7 @@ export default function Stream({ title, largeCoverImage }: Props) {
   return (
     <StreamWrapper>
       <StreamCover>
+        {/* @todo add back */}
         <img src={largeCoverImage} alt={title} loading="lazy" />
       </StreamCover>
       <h3>{title}</h3>

@@ -13,7 +13,8 @@ export default function Search({ onChange }: Props) {
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      onChangeRef.current(event.currentTarget.value.trim());
+      const value = event.currentTarget.value.trim();
+      onChangeRef.current(value);
     },
     []
   );

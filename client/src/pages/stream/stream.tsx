@@ -6,7 +6,7 @@ import {
   StreamWrapper,
 } from "@/pages/stream/stream.styles";
 import api from "@/services/api";
-import { Stream as StreamType } from "@/types";
+import { Request, Stream as StreamType } from "@/types";
 import Loading from "@/components/loading/loading";
 import VideoEmbed from "@/components/video-embed/video-embed";
 import config from "@/config";
@@ -20,9 +20,16 @@ export default function Stream() {
 
   const [loading, setLoading] = React.useState(true);
 
+  const requestRef = React.useRef<Request>(null);
+
   React.useEffect(() => {
-    api
-      .get(`/api/stream/${uuid}`)
+    if (requestRef.current !== null) {
+      requestRef.current.abort();
+    }
+    const req = api.get(`/api/stream/${uuid}`);
+    requestRef.current = req;
+    req
+      .send()
       .then((res) => {
         if (res.status === 401) {
           return navigate("/");

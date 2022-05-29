@@ -3,6 +3,19 @@ import database from "./database";
 import Stream from "../entities/stream";
 import { Torrent } from "../types";
 
+function getTitle(movie: any): string {
+  function get(movie: any, key: string): string {
+    const value: string = (movie[key] ?? "").trim();
+    if (value.length === 0) return undefined;
+    return value;
+  }
+  return (
+    get(movie, "title") ??
+    get(movie, "title_english") ??
+    get(movie, "title_long")
+  );
+}
+
 type Data = {
   nextPage: number | null;
   streams: Stream["_attributes"][];
@@ -29,7 +42,11 @@ async function fetchData(page: number): Promise<Data> {
       nextPage = page + 1;
     }
 
-    const streams: Data["streams"] = movies.map((movie: any) => {
+    const englishMovies = movies.filter((movie: any) => {
+      return movie.language === "en";
+    });
+
+    const streams: Data["streams"] = englishMovies.map((movie: any) => {
       const torrents: Torrent[] = movie.torrents.map((torrent: any) => {
         return {
           url: torrent.url,
@@ -44,7 +61,7 @@ async function fetchData(page: number): Promise<Data> {
 
       return {
         apiId: movie.id,
-        title: movie.title,
+        title: getTitle(movie),
         year: movie.year,
         rating: movie.rating,
         duration: movie.runtime,
