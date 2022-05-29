@@ -6,6 +6,7 @@ import Stream from "./entities/stream";
 const paths = {
   emails: path.resolve(__dirname, "emails"),
   data: path.resolve(__dirname, "..", "data"),
+  torrents: path.resolve(__dirname, "..", "torrents"),
 };
 
 export default {

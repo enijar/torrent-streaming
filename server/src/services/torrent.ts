@@ -15,7 +15,11 @@ const torrent = {
         announce: [...parsedLink.announce, ...config.torrentTrackers],
       });
 
-      client.add(magnetUri, (torrent) => {
+      const options: WebTorrent.TorrentOptions = {
+        path: config.paths.torrents,
+      };
+
+      client.add(magnetUri, options, (torrent) => {
         const file = torrent.files.find((file) => {
           return file.name.endsWith(".mp4");
         });
