@@ -28,6 +28,15 @@ export const StreamSynopsis = styled.div`
   }
 `;
 
+export const StreamTrailer = styled.a`
+  display: flex;
+  gap: 1ch;
+
+  svg {
+    max-width: 5em;
+  }
+`;
+
 export const StreamWrapper = styled.main`
   padding: 1em;
   display: grid;
