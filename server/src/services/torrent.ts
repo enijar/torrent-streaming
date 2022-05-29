@@ -3,13 +3,33 @@ import * as parseTorrent from "parse-torrent";
 import Stream from "../entities/stream";
 import config from "../config";
 
+const MAX_QUALITY = 1080;
+
 const torrent = {
   findFile(
     client: WebTorrent.Instance,
     stream: Stream
   ): Promise<WebTorrent.TorrentFile> {
     return new Promise(async (resolve) => {
-      const parsedLink = parseTorrent(stream.torrents[0].hash);
+      let hash: string = null;
+      let highestQuality = 0;
+      stream.torrents.forEach((torrent) => {
+        const quality = parseInt(torrent.quality);
+        if (
+          torrent.type === "web" &&
+          quality > highestQuality &&
+          quality <= MAX_QUALITY
+        ) {
+          hash = torrent.hash;
+          highestQuality = quality;
+        }
+      });
+
+      if (hash === null) {
+        return resolve(null);
+      }
+
+      const parsedLink = parseTorrent(hash);
       const magnetUri = parseTorrent.toMagnetURI({
         ...parsedLink,
         announce: [...parsedLink.announce, ...config.torrentTrackers],
