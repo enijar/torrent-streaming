@@ -2,7 +2,7 @@
 
 Watch video torrents online. Streams them directly to your browser.
 
-![Preview](./misc/preview.png)
+![Preview](./misc/preview.jpg)
 
 ### Getting Started
 
