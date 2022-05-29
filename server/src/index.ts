@@ -1,10 +1,13 @@
 import config from "./config";
 import { init } from "./services/database";
 import app from "./services/app";
+import cron from "./services/cron";
 
 (async () => {
   try {
     await init();
+
+    cron();
 
     app.listen(config.port, () => {
       console.log(`Server running: http://localhost:${config.port}`);
