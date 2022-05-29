@@ -14,6 +14,8 @@ export type Stream = {
   largeCoverImage: string;
   youTubeTrailerCode: string;
   imdbCode: string;
+  rating: number;
+  year: number;
 };
 
 export type Response = {
