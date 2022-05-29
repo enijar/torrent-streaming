@@ -87,7 +87,7 @@ const config = {
     clean: true,
   },
   externalsPresets: { node: true },
-  externals: [nodeExternals()],
+  externals: [nodeExternals(), { sqlite3: "commonjs sqlite3" }],
 };
 
 export default () => {
