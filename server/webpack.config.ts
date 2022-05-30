@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as webpack from "webpack";
 import * as nodeExternals from "webpack-node-externals";
-import * as CopyPlugin from "copy-webpack-plugin";
 
 const NodemonPlugin = require("nodemon-webpack-plugin");
 
@@ -68,14 +67,6 @@ const config = {
       "process.env.EMAIL_SMTP_PASSWORD": JSON.stringify(
         process.env.EMAIL_SMTP_PASSWORD
       ),
-    }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.join(SRC_DIR, "emails"),
-          to: path.join(BUILD_DIR, "emails"),
-        },
-      ],
     }),
   ],
   resolve: {
