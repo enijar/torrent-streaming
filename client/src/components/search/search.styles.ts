@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const SearchWrapper = styled.div`
   position: sticky;
+  z-index: 1;
   top: -0.5em;
   margin-top: -0.5em;
   margin-bottom: -0.5em;
