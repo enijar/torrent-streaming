@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { StreamWrapper } from "@/components/stream/stream.styles";
 
 export const StreamsListWrapper = styled.div`
   --cols: 5;
@@ -6,6 +7,11 @@ export const StreamsListWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(250px, 1fr));
   justify-content: center;
+
+  :hover ${StreamWrapper}:not(:hover) {
+    filter: grayscale(100%);
+    opacity: 0.25;
+  }
 
   @media (max-width: 1300px) {
     --cols: 4;

@@ -14,13 +14,14 @@ type Props = StreamType & {
 };
 
 export default function Stream({
+  uuid,
   title,
   largeCoverImage,
   rating,
   year,
 }: Props) {
   return (
-    <StreamWrapper>
+    <StreamWrapper to={`/stream/${uuid}`}>
       <StreamCover>
         <img src={largeCoverImage} alt={title} loading="lazy" />
       </StreamCover>

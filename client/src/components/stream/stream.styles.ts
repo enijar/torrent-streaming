@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { Link } from "react-router-dom";
 import { MAX_RATING } from "@/consts";
 
 type RatingProps = {
@@ -52,11 +53,12 @@ export const StreamCover = styled.div`
   }
 `;
 
-export const StreamWrapper = styled.div`
+export const StreamWrapper = styled(Link)`
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 0.5em;
+  transition: filter 400ms ease, opacity 400ms ease;
 
   img {
     display: block;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { StreamsListWrapper } from "@/components/streams-list/streams-list.styles";
 import { Request, Stream as StreamType } from "@/types";
 import Stream from "@/components/stream/stream";
@@ -80,11 +80,7 @@ export default function StreamsList({ page, query, onLoading }: Props) {
   return (
     <StreamsListWrapper>
       {streams.map((stream) => {
-        return (
-          <Link key={stream.uuid} to={`/stream/${stream.uuid}`}>
-            <Stream {...stream} />
-          </Link>
-        );
+        return <Stream key={stream.uuid} {...stream} />;
       })}
     </StreamsListWrapper>
   );
