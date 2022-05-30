@@ -15,11 +15,7 @@ const torrent = {
       let highestQuality = 0;
       stream.torrents.forEach((torrent) => {
         const quality = parseInt(torrent.quality);
-        if (
-          torrent.type === "web" &&
-          quality > highestQuality &&
-          quality <= MAX_QUALITY
-        ) {
+        if (quality > highestQuality && quality <= MAX_QUALITY) {
           hash = torrent.hash;
           highestQuality = quality;
         }
