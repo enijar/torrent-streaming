@@ -4,7 +4,6 @@ import { StreamsListWrapper } from "@/components/streams-list/streams-list.style
 import { Request, Stream as StreamType } from "@/types";
 import Stream from "@/components/stream/stream";
 import api from "@/services/api";
-import * as stream from "stream";
 
 type Props = {
   page: number;

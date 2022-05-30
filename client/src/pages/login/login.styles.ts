@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Message, Error } from "@/styles/elements";
+import { Error, Message } from "@/styles/elements";
 
 export const LoginWrapper = styled.main`
   display: grid;

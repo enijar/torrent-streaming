@@ -1,8 +1,8 @@
 import React from "react";
 import {
-  StreamRating,
-  StreamInfo,
   StreamCover,
+  StreamInfo,
+  StreamRating,
   StreamWrapper,
 } from "@/components/stream/stream.styles";
 import { Stream as StreamType } from "@/types";

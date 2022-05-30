@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginWrapper } from "@/pages/login/login.styles";
-import { Message, Error } from "@/styles/elements";
+import { Error, Message } from "@/styles/elements";
 import useForm from "@/hooks/use-form";
-import { Messages, Errors, Request } from "@/types";
+import { Errors, Messages, Request } from "@/types";
 import api from "@/services/api";
 import Loading from "@/components/loading/loading";
 

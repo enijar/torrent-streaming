@@ -8,6 +8,7 @@ function getTitle(movie: any): string {
     if (value.length === 0) return undefined;
     return value;
   }
+
   return (
     get(movie, "title") ??
     get(movie, "title_english") ??
