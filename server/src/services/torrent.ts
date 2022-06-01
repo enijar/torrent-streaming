@@ -35,12 +35,25 @@ const torrent = {
         path: config.paths.torrents,
       };
 
-      client.add(magnetUri, options, (torrent) => {
+      function getFile(
+        torrent: WebTorrent.Torrent
+      ): WebTorrent.TorrentFile | null {
         const file = torrent.files.find((file) => {
           return file.name.endsWith(".mp4");
         });
 
-        resolve((file ?? null) as WebTorrent.TorrentFile);
+        return (file as WebTorrent.TorrentFile) ?? null;
+      }
+
+      const torrent = client.get(magnetUri);
+
+      if (torrent) {
+        return resolve(getFile(torrent));
+      }
+
+      client.add(magnetUri, options, (torrent) => {
+        const file = getFile(torrent);
+        resolve(file);
       });
     });
   },
