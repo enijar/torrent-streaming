@@ -8,7 +8,11 @@ export default async function streams(req: PrivateRequest, res: Response) {
   const { limit, offset } = paginate(req);
   const q = String(req.query?.q ?? "").trim();
 
-  let query: FindOptions["where"] = undefined;
+  let query: FindOptions["where"] = {
+    year: {
+      [Op.lte]: new Date().getFullYear(),
+    },
+  };
 
   if (q.length > 0) {
     query = {
@@ -18,15 +22,12 @@ export default async function streams(req: PrivateRequest, res: Response) {
     };
   }
 
-  const streams = await Stream.findAll({
-    where: query,
-    order: [
-      ["rating", "desc"],
-      ["createdAt", "asc"],
-    ],
-    limit,
-    offset,
-  });
+  const order: FindOptions["order"] = [
+    ["year", "desc"],
+    ["rating", "desc"],
+  ];
+
+  const streams = await Stream.findAll({ where: query, order, limit, offset });
 
   res.json({ data: { streams } });
 }
