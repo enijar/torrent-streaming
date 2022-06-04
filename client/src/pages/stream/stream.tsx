@@ -50,14 +50,16 @@ export default function Stream() {
       </StreamBack>
       <h1>{stream.title}</h1>
       <VideoEmbed src={`${config.apiUrl}/api/watch/${stream.uuid}`} />
-      <StreamTrailer
-        href={`https://youtube.com/watch?v=${stream.youTubeTrailerCode}`}
-        target="_blank"
-        rel="nofollow noopener noreferrer"
-      >
-        <p>Watch the trailer</p>
-        <YoutubeLogo />
-      </StreamTrailer>
+      {stream.youTubeTrailerCode.length > 0 && (
+        <StreamTrailer
+          href={`https://youtube.com/watch?v=${stream.youTubeTrailerCode}`}
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          <p>Watch the trailer</p>
+          <YoutubeLogo />
+        </StreamTrailer>
+      )}
       <StreamSynopsis>
         <h3>Synopsis</h3>
         <p dangerouslySetInnerHTML={{ __html: stream.synopsis }} />
