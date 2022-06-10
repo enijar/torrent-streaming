@@ -26,7 +26,7 @@ export default function VideoEmbed({ src }: Props) {
           />
         </svg>
       )}
-      {interacted && <video src={src} controls />}
+      {interacted && <video src={src} controls autoPlay />}
     </VideoEmbedWrapper>
   );
 }
