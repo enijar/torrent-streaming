@@ -21,7 +21,7 @@ export default function Stream({
   year,
 }: Props) {
   return (
-    <StreamWrapper to={`/stream/${uuid}`} title={title}>
+    <StreamWrapper to={`/streams/${uuid}`} title={title}>
       <StreamCover>
         <img src={largeCoverImage} alt={title} loading="lazy" />
       </StreamCover>

@@ -13,8 +13,9 @@ export default function App() {
       <AppReset />
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/streams" element={<Streams />} />
-        <Route path="/stream/:uuid" element={<Stream />} />
+        <Route path="/streams" element={<Streams />}>
+          <Route path=":uuid" element={<Stream />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </React.Suspense>

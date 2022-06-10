@@ -5,6 +5,7 @@ import {
 } from "@/pages/streams/streams.styles";
 import Search from "@/components/search/search";
 import StreamsList from "@/components/streams-list/streams-list";
+import { Outlet } from "react-router-dom";
 
 export default function Streams() {
   const [page, setPage] = React.useState(1);
@@ -35,11 +36,14 @@ export default function Streams() {
   const wrapperRef = React.useRef<HTMLDivElement>();
 
   return (
-    <StreamsWrapper ref={wrapperRef} onScroll={onScroll}>
-      <StreamsContainer>
-        <Search onChange={onChange} />
-        <StreamsList page={page} query={query} onLoading={onLoading} />
-      </StreamsContainer>
-    </StreamsWrapper>
+    <>
+      <Outlet />
+      <StreamsWrapper ref={wrapperRef} onScroll={onScroll}>
+        <StreamsContainer>
+          <Search onChange={onChange} />
+          <StreamsList page={page} query={query} onLoading={onLoading} />
+        </StreamsContainer>
+      </StreamsWrapper>
+    </>
   );
 }
