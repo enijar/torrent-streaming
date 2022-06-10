@@ -27,7 +27,22 @@ export default async function streams(req: PrivateRequest, res: Response) {
     ["year", "desc"],
   ];
 
-  const streams = await Stream.findAll({ where: query, order, limit, offset });
+  const streams = await Stream.findAll({
+    attributes: [
+      "uuid",
+      "title",
+      "year",
+      "duration",
+      "synopsis",
+      "rating",
+      "youtubeTrailerCode",
+      "largeCoverImage",
+    ],
+    where: query,
+    order,
+    limit,
+    offset,
+  });
 
   res.json({ data: { streams } });
 }
