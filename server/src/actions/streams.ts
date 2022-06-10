@@ -23,8 +23,8 @@ export default async function streams(req: PrivateRequest, res: Response) {
   }
 
   const order: FindOptions["order"] = [
-    ["year", "desc"],
     ["rating", "desc"],
+    ["year", "desc"],
   ];
 
   const streams = await Stream.findAll({ where: query, order, limit, offset });
