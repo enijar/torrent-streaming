@@ -60,6 +60,10 @@ export const StreamWrapper = styled(Link)`
   padding: 0.5em;
   transition: filter 400ms ease, opacity 400ms ease;
 
+  :focus {
+    outline: none;
+  }
+
   img {
     display: block;
     width: 100%;

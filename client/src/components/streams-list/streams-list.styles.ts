@@ -8,7 +8,8 @@ export const StreamsListWrapper = styled.div`
   grid-template-columns: repeat(var(--cols), minmax(250px, 1fr));
   justify-content: center;
 
-  :hover ${StreamWrapper}:not(:hover) {
+  :hover ${StreamWrapper}:not(:hover),
+  :focus-within ${StreamWrapper}:not(:focus) {
     filter: grayscale(100%);
     opacity: 0.25;
   }
