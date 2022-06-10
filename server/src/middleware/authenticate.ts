@@ -10,7 +10,7 @@ export default async function authenticate(
 ) {
   try {
     const authToken = req.cookies.get("authToken");
-    const { uuid } = authService.verify(authToken);
+    const { uuid = "" } = authService.verify(authToken);
 
     const user = await User.findOne({ where: { uuid } });
 
