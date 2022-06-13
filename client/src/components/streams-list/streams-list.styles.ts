@@ -5,7 +5,7 @@ export const StreamsListWrapper = styled.div`
   --cols: 5;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(250px, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(200px, 1fr));
   justify-content: center;
 
   :hover ${StreamWrapper}:not(:hover),
