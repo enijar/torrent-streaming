@@ -1,12 +1,4 @@
-FROM ubuntu:20.04
-
-RUN apt-get update -y --fix-missing
-RUN apt-get install -y --fix-missing apt-transport-https
-RUN apt-get install -y --fix-missing curl build-essential python gcc g++
-
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-
-RUN apt-get install -y --fix-missing nodejs jq
+FROM node:16.15-alpine3.14
 
 WORKDIR /usr/app
 
@@ -66,8 +58,4 @@ RUN npm run build
 
 EXPOSE $PORT
 
-RUN npm install -g pm2
-
-RUN sed -i 's/pidusage(pids, function retPidUsage(err, statistics) {/pidusage(pids, { usePs: true }, function retPidUsage(err, statistics) {/' /usr/lib/node_modules/pm2/lib/God/ActionMethods.js
-
-ENTRYPOINT ["pm2-runtime", "ecosystem.config.js"]
+ENTRYPOINT ["node", "build/index.js"]
