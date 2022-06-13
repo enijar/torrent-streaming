@@ -2,6 +2,10 @@ FROM node:16.15-alpine3.14
 
 WORKDIR /usr/app
 
+RUN npm install -g pm2
+
+RUN sed -i 's/pidusage(pids, function retPidUsage(err, statistics) {/pidusage(pids, { usePs: true }, function retPidUsage(err, statistics) {/' /usr/local/lib/node_modules/pm2/lib/God/ActionMethods.js
+
 COPY package*.json .
 
 RUN npm install
@@ -58,4 +62,4 @@ RUN npm run build
 
 EXPOSE $PORT
 
-ENTRYPOINT ["node", "build/index.js"]
+ENTRYPOINT ["pm2-runtime", "ecosystem.config.js"]

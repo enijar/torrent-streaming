@@ -9,7 +9,7 @@ import cron from "./services/cron";
 
     cron();
 
-    app.listen(config.port, () => {
+    app.listen(config.port, "0.0.0.0", () => {
       console.log(`Server running: http://localhost:${config.port}`);
     });
   } catch (err) {
