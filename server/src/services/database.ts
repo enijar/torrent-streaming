@@ -15,10 +15,9 @@ const database = new Sequelize({
 });
 
 export async function init() {
+  // @todo investigate this bug
   // @note have to call alter multiple times due to there being a bug with
   // sequelize inside the Docker container
-  // @todo investigate this bug
-  console.log([User, Stream]);
   await database.sync({ alter: true });
   await Promise.all(
     config.database.entities.map((entity) => {
