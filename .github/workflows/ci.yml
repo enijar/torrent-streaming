@@ -40,6 +40,10 @@ jobs:
             --build-arg EMAIL_SMTP_USERNAME=${{ secrets.EMAIL_SMTP_USERNAME }} \
             --build-arg EMAIL_SMTP_PASSWORD=${{ secrets.EMAIL_SMTP_PASSWORD }}
 
+      - name: Docker Logout
+        run: |
+          docker logout
+
       - name: Docker Login
         run: |
           docker login ${{ secrets.DOCKERHUB_REGISTRY }} \
@@ -84,6 +88,10 @@ jobs:
             --build-arg NODE_ENV=production \
             --build-arg PORT=8080 \
             --build-arg API_URL=${{ secrets.API_URL }}
+
+      - name: Docker Logout
+        run: |
+          docker logout
 
       - name: Docker Login
         run: |
