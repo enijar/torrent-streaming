@@ -5,6 +5,7 @@ import Stream from "../entities/stream";
 
 const database = new Sequelize({
   host: config.database.host,
+  port: config.database.port,
   database: config.database.name,
   dialect: config.database.dialect,
   username: config.database.username,
