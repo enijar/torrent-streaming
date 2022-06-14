@@ -48,6 +48,7 @@
     "node-cron": "^3.0.0",
     "node-fetch": "^2.6.7",
     "parse-torrent": "^9.1.5",
+    "pg": "^8.7.3",
     "pump": "^3.0.0",
     "range-parser": "^1.2.1",
     "reflect-metadata": "^0.1.13",
