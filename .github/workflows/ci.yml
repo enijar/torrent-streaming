@@ -15,7 +15,7 @@ jobs:
 
       - name: Build Image
         run: |
-          DOCKER_BUILDKIT=1 docker build server \
+          docker build server \
             --rm \
             -f server/Dockerfile \
             -t enijar/torrent-streaming-server \
@@ -79,7 +79,7 @@ jobs:
 
       - name: Build Image
         run: |
-          DOCKER_BUILDKIT=1 docker build client \
+          docker build client \
             --rm \
             -f client/Dockerfile \
             -t enijar/torrent-streaming-client \
