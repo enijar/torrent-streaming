@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build Image
+        run: |
+          DOCKER_BUILDKIT=1 docker build server \
+            --rm \
+            -f server/Dockerfile \
+            -t enijar/torrent-streaming-server \
+            --build-arg NODE_ENV=production \
+            --build-arg PORT=3000 \
+            --build-arg API_URL=${{ secrets.API_URL }} \
+            --build-arg APP_URL=${{ secrets.APP_URL }} \
+            --build-arg CORS_ORIGINS=${{ secrets.API_URL }},${{ secrets.APP_URL }} \
+            --build-arg BCRYPT_ROUNDS=12 \
+            --build-arg DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
+            --build-arg DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
+            --build-arg DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
+            --build-arg DATABASE_DIALECT=mysql \
+            --build-arg DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
+            --build-arg DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --build-arg EMAIL_PREVIEW=false \
+            --build-arg EMAIL_SEND=true \
+            --build-arg EMAIL_FROM=${{ secrets.EMAIL_FROM }} \
+            --build-arg EMAIL_SMTP_HOST=${{ secrets.EMAIL_SMTP_HOST }} \
+            --build-arg EMAIL_SMTP_PORT=587 \
+            --build-arg EMAIL_SMTP_USERNAME=${{ secrets.EMAIL_SMTP_USERNAME }} \
+            --build-arg EMAIL_SMTP_PASSWORD=${{ secrets.EMAIL_SMTP_PASSWORD }}
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DOCKERHUB_REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Image
+        run: |
+          docker push enijar/torrent-streaming-server:latest
+
+      - name: Install DoCtl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_ACCESS_TOKEN }}
+
+      - name: DO Login
+        run: |
+          doctl registry login --expiry-seconds 600
+
+      - name: Deploy App
+        run: |
+          doctl apps create-deployment f61eb26a-6495-40b4-be2c-6eb007a435de
+
+  deploy-client:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build Image
+        run: |
+          DOCKER_BUILDKIT=1 docker build client \
+            --rm \
+            -f client/Dockerfile \
+            -t enijar/torrent-streaming-client \
+            --build-arg NODE_ENV=production \
+            --build-arg PORT=8080 \
+            --build-arg API_URL=${{ secrets.API_URL }}
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DOCKERHUB_REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Image
+        run: |
+          docker push enijar/torrent-streaming-client:latest
+
+      - name: Install DoCtl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_ACCESS_TOKEN }}
+
+      - name: DO Login
+        run: |
+          doctl registry login --expiry-seconds 600
+
+      - name: Deploy App
+        run: |
+          doctl apps create-deployment 3e7ba60e-2481-4c6d-bb7d-d4182b5198a9
