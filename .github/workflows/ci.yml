@@ -49,7 +49,7 @@ jobs:
       - name: Tag Image
         run: |
           docker tag enijar/torrent-streaming-server \
-            ${{ secrets.DOCKERHUB_REGISTRY }}/enijar/torrent-streaming-server:latest
+            enijar/torrent-streaming-server:latest
 
       - name: Push Image
         run: |
@@ -94,7 +94,7 @@ jobs:
       - name: Tag Image
         run: |
           docker tag enijar/torrent-streaming-client \
-          ${{ secrets.DOCKERHUB_REGISTRY }}/enijar/torrent-streaming-client:latest
+            enijar/torrent-streaming-client:latest
 
       - name: Push Image
         run: |
