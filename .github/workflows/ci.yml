@@ -57,7 +57,7 @@ jobs:
 
       - name: Push Image
         run: |
-          docker push enijar/torrent-streaming-server:latest
+          docker push ${{ secrets.DOCKERHUB_REGISTRY }}/enijar/torrent-streaming-server:latest
 
       - name: Install DoCtl
         uses: digitalocean/action-doctl@v2
@@ -106,7 +106,7 @@ jobs:
 
       - name: Push Image
         run: |
-          docker push enijar/torrent-streaming-client:latest
+          docker push ${{ secrets.DOCKERHUB_REGISTRY }}/enijar/torrent-streaming-client:latest
 
       - name: Install DoCtl
         uses: digitalocean/action-doctl@v2
