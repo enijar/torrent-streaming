@@ -5,6 +5,11 @@ import config from "../config";
 import User from "../entities/user";
 import Stream from "../entities/stream";
 
+const ca = fs.readFileSync(
+  path.join(config.paths.data, "ca-certificate.crt"),
+  "utf8"
+);
+
 const database = new Sequelize({
   host: config.database.host,
   port: config.database.port,
@@ -13,14 +18,7 @@ const database = new Sequelize({
   username: config.database.username,
   password: config.database.password,
   storage: config.database.storage,
-  dialectOptions: {
-    ssl: {
-      ca: fs.readFileSync(
-        path.join(config.paths.data, "ca-certificate.crt"),
-        "utf8"
-      ),
-    },
-  },
+  dialectOptions: config.env === "development" ? undefined : { ssl: { ca } },
   logging: false,
   models: [User, Stream],
 });
