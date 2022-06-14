@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import { Sequelize } from "sequelize-typescript";
 import config from "../config";
 import User from "../entities/user";
@@ -11,6 +13,14 @@ const database = new Sequelize({
   username: config.database.username,
   password: config.database.password,
   storage: config.database.storage,
+  dialectOptions: {
+    ssl: {
+      ca: fs.readFileSync(
+        path.join(config.paths.data, "ca-certificate.crt"),
+        "utf8"
+      ),
+    },
+  },
   logging: false,
   models: [User, Stream],
 });
