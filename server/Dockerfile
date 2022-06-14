@@ -1,5 +1,7 @@
 FROM node:16.15-alpine3.14
 
+RUN apk --no-cache add procps
+
 WORKDIR /usr/app
 
 RUN npm install -g pm2
