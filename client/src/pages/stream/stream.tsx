@@ -49,7 +49,10 @@ export default function Stream() {
         <span>Back to Streams</span>
       </StreamBack>
       <h1>{stream.title}</h1>
-      <VideoEmbed src={`${config.apiUrl}/api/watch/${stream.uuid}`} />
+      <VideoEmbed
+        src={`${config.apiUrl}/api/watch/${stream.uuid}`}
+        poster={stream.largeCoverImage}
+      />
       {stream.youTubeTrailerCode.length > 0 && (
         <StreamTrailer
           href={`https://youtube.com/watch?v=${stream.youTubeTrailerCode}`}

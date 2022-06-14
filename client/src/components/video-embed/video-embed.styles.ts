@@ -6,6 +6,8 @@ export const VideoEmbedWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background-color: black;
+  background-size: cover;
+  background-position: 50%;
 
   svg {
     width: 5em;

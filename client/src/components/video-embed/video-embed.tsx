@@ -3,15 +3,19 @@ import { VideoEmbedWrapper } from "@/components/video-embed/video-embed.styles";
 
 type Props = {
   src: string;
+  poster: string;
 };
 
-export default function VideoEmbed({ src }: Props) {
+export default function VideoEmbed({ src, poster }: Props) {
   const [interacted, setInteracted] = React.useState(false);
 
   return (
     <VideoEmbedWrapper
       onClick={() => setInteracted(true)}
-      style={{ cursor: interacted ? "auto" : "pointer" }}
+      style={{
+        cursor: interacted ? "auto" : "pointer",
+        backgroundImage: `url(${poster})`,
+      }}
     >
       {!interacted && (
         <svg
