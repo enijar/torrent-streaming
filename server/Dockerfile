@@ -1,6 +1,6 @@
 FROM node:16.15-alpine3.14
 
-RUN apk --no-cache add procps
+RUN apk --no-cache add procps jq
 
 WORKDIR /usr/app
 
