@@ -46,6 +46,11 @@ jobs:
             -u ${{ secrets.DOCKERHUB_USERNAME }} \
             -p ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Tag Image
+        run: |
+          docker tag enijar/torrent-streaming-server \
+            ${{ secrets.DOCKERHUB_REGISTRY }}/enijar/torrent-streaming-server:latest
+
       - name: Push Image
         run: |
           docker push enijar/torrent-streaming-server:latest
@@ -85,6 +90,11 @@ jobs:
           docker login ${{ secrets.DOCKERHUB_REGISTRY }} \
             -u ${{ secrets.DOCKERHUB_USERNAME }} \
             -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag Image
+        run: |
+          docker tag enijar/torrent-streaming-client \
+          ${{ secrets.DOCKERHUB_REGISTRY }}/enijar/torrent-streaming-client:latest
 
       - name: Push Image
         run: |
