@@ -1,9 +1,13 @@
 import React from "react";
+import { NotFoundWrapper } from "@/pages/not-found/not-found.styles";
 
 export default function NotFound() {
   return (
-    <main>
-      <h1>Not Found</h1>
-    </main>
+    <NotFoundWrapper>
+      <h1>
+        404
+        <br /> Page Not Found
+      </h1>
+    </NotFoundWrapper>
   );
 }
