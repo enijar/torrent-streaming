@@ -12,7 +12,7 @@ type CacheData = {
   updatedAt: number;
 };
 
-const CACHE_TIME = 60 * 60 * 1000; // 1 hour
+const CACHE_TIME = 20 * 60 * 1000; // 20 mins
 
 const cache = new Map<string, CacheData>();
 
@@ -30,6 +30,7 @@ export default async function watch(req: PrivateRequest, res: Response) {
     cachedData.stream = stream;
     cachedData.file = await torrent.findFile(client, stream);
     cachedData.updatedAt = now;
+    cache.set(uuid, cachedData);
   }
 
   // Create cache
