@@ -8,11 +8,11 @@ export const StreamBack = styled(Link)`
   display: flex;
   align-items: center;
   gap: 0.25em;
+  white-space: nowrap;
 
   svg {
     display: block;
-    max-width: 1em;
-    transform: translateY(-0.075em);
+    width: 1em;
   }
 `;
 
@@ -48,6 +48,19 @@ export const StreamImdb = styled.a`
   }
 `;
 
+export const StreamNotFoundWrapper = styled.main`
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+
+  h3 {
+    text-align: center;
+  }
+`;
+
 export const StreamWrapper = styled.main`
   padding: 1em;
   display: grid;
@@ -55,4 +68,8 @@ export const StreamWrapper = styled.main`
   grid-auto-rows: max-content;
   justify-content: center;
   gap: 1em;
+
+  h3 {
+    text-align: center;
+  }
 `;

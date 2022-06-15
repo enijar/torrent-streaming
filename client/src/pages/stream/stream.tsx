@@ -6,6 +6,7 @@ import {
   StreamImdb,
   StreamTrailer,
   StreamWrapper,
+  StreamNotFoundWrapper,
 } from "@/pages/stream/stream.styles";
 import api from "@/services/api";
 import config from "@/config";
@@ -44,7 +45,20 @@ export default function Stream() {
 
   if (loading) return <Loading />;
 
-  if (stream === null) return <h3>Stream Not Found</h3>;
+  if (stream === null)
+    return (
+      <StreamNotFoundWrapper>
+        <h3>
+          404
+          <br />
+          Stream Not Found
+        </h3>
+        <StreamBack to="/streams">
+          <Chevron />
+          <span>Back to Streams</span>
+        </StreamBack>
+      </StreamNotFoundWrapper>
+    );
 
   return (
     <StreamWrapper>
