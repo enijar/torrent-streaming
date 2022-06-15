@@ -3,6 +3,8 @@ import { init } from "./services/database";
 import app from "./services/app";
 import cron from "./services/cron";
 
+console.log(0);
+
 (async () => {
   try {
     await init();
