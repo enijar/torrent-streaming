@@ -38,6 +38,7 @@ const config = {
       "process.env.CORS_ORIGINS": JSON.stringify(process.env.CORS_ORIGINS),
       "process.env.BCRYPT_ROUNDS": JSON.stringify(process.env.BCRYPT_ROUNDS),
       "process.env.DATABASE_HOST": JSON.stringify(process.env.DATABASE_HOST),
+      "process.env.DATABASE_PORT": JSON.stringify(process.env.DATABASE_PORT),
       "process.env.DATABASE_NAME": JSON.stringify(process.env.DATABASE_NAME),
       "process.env.DATABASE_DIALECT": JSON.stringify(
         process.env.DATABASE_DIALECT
