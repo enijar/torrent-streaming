@@ -5,13 +5,22 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Torrent Streaming Login</title>
+    <title>🍿 All the Streams Login</title>
 </head>
 <body>
-<a href="<%= `${config.apiUrl}/api/auth?loginToken=${loginToken}` %>">
-    <p>
+<p>
+    <img src="<%= `${config.appUrl}/preview.png` %>" alt="All the Streams" style="max-width: 100%;"/>
+</p>
+
+<p>
+    <a href="<%= `${config.apiUrl}/api/auth?loginToken=${loginToken}` %>">
         Click here to login
-    </p>
-</a>
+    </a>
+</p>
+
+<p>
+    If the link above doesn't work, copy/paste this into your browser URL bar:<br/>
+    <%= `${config.apiUrl}/api/auth?loginToken=${loginToken}` %>
+</p>
 </body>
 </html>
