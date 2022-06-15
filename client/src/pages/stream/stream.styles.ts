@@ -68,8 +68,4 @@ export const StreamWrapper = styled.main`
   grid-auto-rows: max-content;
   justify-content: center;
   gap: 1em;
-
-  h3 {
-    text-align: center;
-  }
 `;
