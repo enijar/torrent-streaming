@@ -1,31 +1,5 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { MAX_RATING } from "@/consts";
-
-type RatingProps = {
-  rating: number;
-};
-
-export const StreamRating = styled.div<RatingProps>`
-  display: flex;
-  align-items: center;
-  gap: 0.2em;
-
-  svg {
-    width: 0.5em;
-
-    ${({ rating }) => {
-      return Array.from(Array(MAX_RATING)).map((_, index) => {
-        const number = index + 1;
-        return css`
-          :nth-child(${number}) {
-            opacity: ${number > rating ? 0.25 : 1};
-          }
-        `;
-      });
-    }}
-  }
-`;
 
 export const StreamInfo = styled.div`
   display: flex;

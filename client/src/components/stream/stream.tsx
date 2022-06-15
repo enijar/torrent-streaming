@@ -2,12 +2,10 @@ import React from "react";
 import {
   StreamCover,
   StreamInfo,
-  StreamRating,
   StreamWrapper,
 } from "@/components/stream/stream.styles";
 import { Stream as StreamType } from "@/types";
-import { MAX_RATING } from "@/consts";
-import Star from "@/icons/star";
+import Rating from "@/components/rating/rating";
 
 type Props = StreamType & {
   //
@@ -26,11 +24,7 @@ export default function Stream({
         <img src={largeCoverImage} alt={title} loading="lazy" />
       </StreamCover>
       <StreamInfo>
-        <StreamRating rating={rating}>
-          {Array.from(Array(MAX_RATING)).map((_, index) => {
-            return <Star key={index} />;
-          })}
-        </StreamRating>
+        <Rating rating={rating} />
         <time>{year}</time>
       </StreamInfo>
       <h3>{title}</h3>
