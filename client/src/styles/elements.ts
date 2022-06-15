@@ -9,3 +9,9 @@ export const Error = styled.div`
   color: crimson;
   font-style: italic;
 `;
+
+export const Flex = styled.div`
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+`;

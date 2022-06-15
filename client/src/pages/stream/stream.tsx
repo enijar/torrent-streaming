@@ -3,16 +3,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   StreamBack,
   StreamSynopsis,
+  StreamImdb,
   StreamTrailer,
   StreamWrapper,
 } from "@/pages/stream/stream.styles";
 import api from "@/services/api";
+import config from "@/config";
 import { Request, Stream as StreamType } from "@/types";
+import { Flex } from "@/styles/elements";
 import Loading from "@/components/loading/loading";
 import VideoEmbed from "@/components/video-embed/video-embed";
-import config from "@/config";
 import Chevron from "@/icons/chevron";
 import YoutubeLogo from "@/icons/youtube-logo";
+import Rating from "@/components/rating/rating";
+import ImdbLogo from "@/icons/imdb-logo";
 
 export default function Stream() {
   const { uuid } = useParams();
@@ -49,6 +53,10 @@ export default function Stream() {
         <span>Back to Streams</span>
       </StreamBack>
       <h1>{stream.title}</h1>
+      <Flex>
+        <Rating rating={stream.rating} />
+        <time>{stream.year}</time>
+      </Flex>
       <VideoEmbed
         src={`${config.apiUrl}/api/watch/${stream.uuid}`}
         poster={stream.largeCoverImage}
@@ -62,6 +70,16 @@ export default function Stream() {
           <p>Watch the trailer</p>
           <YoutubeLogo />
         </StreamTrailer>
+      )}
+      {stream.imdbCode.length > 0 && (
+        <StreamImdb
+          href={`https://www.imdb.com/title/${stream.imdbCode}`}
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          <p>View on IMDb</p>
+          <ImdbLogo />
+        </StreamImdb>
       )}
       <StreamSynopsis>
         <h3>Synopsis</h3>

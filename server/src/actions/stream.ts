@@ -12,6 +12,7 @@ export default async function stream(req: PrivateRequest, res: Response) {
       "rating",
       "synopsis",
       "youTubeTrailerCode",
+      "imdbCode",
       "largeCoverImage",
     ],
   });
