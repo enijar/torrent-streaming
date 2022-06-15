@@ -1,4 +1,4 @@
-# Torrent Streaming
+# 🍿 Torrent Streaming
 
 Watch video torrents online. Streams them directly to your browser.
 
