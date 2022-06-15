@@ -1,9 +1,10 @@
-name: Client CI
+name: Server CI
 
 on:
   push:
     paths:
-      - "server"
+      - ".github/workflows/server-ci.yml"
+      - "server/**"
 
 jobs:
   build:
