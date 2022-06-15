@@ -28,16 +28,7 @@ export default async function streams(req: PrivateRequest, res: Response) {
   ];
 
   const streams = await Stream.findAll({
-    attributes: [
-      "uuid",
-      "title",
-      "year",
-      "duration",
-      "synopsis",
-      "rating",
-      "youtubeTrailerCode",
-      "largeCoverImage",
-    ],
+    attributes: ["uuid", "title", "year", "rating", "largeCoverImage"],
     where: query,
     order,
     limit,
