@@ -33,7 +33,7 @@ export const AppReset = createGlobalStyle`
 
   html {
     font-size: clamp(var(--root-min), var(--root-size), var(--root-max));
-    font-family: Arial, sans-serif;
+    font-family: system-ui, Arial, sans-serif;
     text-rendering: geometricPrecision;
     font-weight: normal;
     line-height: 1em;
