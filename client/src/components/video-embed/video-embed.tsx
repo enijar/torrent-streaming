@@ -14,7 +14,7 @@ export default function VideoEmbed({ src, poster }: Props) {
       onClick={() => setInteracted(true)}
       style={{
         cursor: interacted ? "auto" : "pointer",
-        backgroundImage: `url(${poster})`,
+        backgroundImage: interacted ? undefined : `url(${poster})`,
       }}
     >
       {!interacted && (
