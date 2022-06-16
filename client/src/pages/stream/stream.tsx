@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CastProvider from "react-chromecast";
 import {
   StreamBack,
   StreamSynopsis,
@@ -72,12 +71,10 @@ export default function Stream() {
         <Rating rating={stream.rating} />
         <time>{stream.year}</time>
       </Flex>
-      <CastProvider>
-        <VideoEmbed
-          src={`${config.apiUrl}/api/watch/${stream.uuid}`}
-          poster={stream.largeCoverImage}
-        />
-      </CastProvider>
+      <VideoEmbed
+        src={`${config.apiUrl}/api/watch/${stream.uuid}`}
+        poster={stream.largeCoverImage}
+      />
       {stream.youTubeTrailerCode.length > 0 && (
         <StreamTrailer
           href={`https://youtube.com/watch?v=${stream.youTubeTrailerCode}`}
