@@ -16,7 +16,7 @@ export default function VideoEmbed({ src, poster }: Props) {
     function onKeyDown(event: KeyboardEvent) {
       const key = event.key.toLowerCase();
       if (["f"].includes(key) && videoRef.current && screenfull.isEnabled) {
-        screenfull.request(videoRef.current).catch((err) => {
+        screenfull.toggle(videoRef.current).catch((err) => {
           console.error(err);
         });
       }
