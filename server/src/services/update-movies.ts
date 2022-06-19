@@ -47,7 +47,9 @@ async function fetchData(page: number): Promise<Data> {
     });
 
     const streams: Data["streams"] = englishMovies.map((movie: any) => {
+      let seeds = 0;
       const torrents: Torrent[] = movie.torrents.map((torrent: any) => {
+        seeds += torrent.seeds;
         return {
           url: torrent.url,
           hash: torrent.hash,
@@ -71,6 +73,7 @@ async function fetchData(page: number): Promise<Data> {
         imdbCode: movie.imdb_code,
         largeCoverImage: movie.large_cover_image,
         torrents,
+        seeds,
       };
     });
     return { streams, nextPage };

@@ -6,6 +6,7 @@ import { Torrent } from "../types";
   indexes: [
     { name: "streams_index_apiId", unique: true, fields: ["apiId"] },
     { name: "streams_index_title", fields: ["title"] },
+    { name: "streams_index_seeds", fields: ["seeds"] },
   ],
 })
 export default class Stream extends Model {
@@ -48,6 +49,9 @@ export default class Stream extends Model {
 
   @Column({ type: DataType.JSON })
   torrents: Torrent[];
+
+  @Column({ defaultValue: 0 })
+  seeds: number;
 
   toJSON<T extends any>(): T {
     const data = super.toJSON<Stream>();
