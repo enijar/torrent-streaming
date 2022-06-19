@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import fetch, { FetchError } from "node-fetch";
 import Stream from "../entities/stream";
 import { Torrent } from "../types";
 
@@ -21,7 +21,14 @@ type Data = {
   streams: Stream["_attributes"][];
 };
 
-async function fetchData(page: number): Promise<Data> {
+type FetchState = {
+  page: number;
+  retries: number;
+};
+
+const MAX_RETRIES = 3;
+
+async function fetchData(state: FetchState): Promise<Data> {
   try {
     const limit = 50;
     const url = new URL("https://yts.mx/api/v2/list_movies.json");
@@ -29,17 +36,22 @@ async function fetchData(page: number): Promise<Data> {
     url.searchParams.set("quality", "1080p");
     url.searchParams.set("limit", limit.toString());
     url.searchParams.set("language", "en");
-    url.searchParams.set("page", page.toString());
+    url.searchParams.set("page", state.page.toString());
 
     const res = await fetch(url.toString());
-    const json: any = await res.json();
+    let json: any;
+    try {
+      json = await res.json();
+    } catch (err) {
+
+    }
     const { movies = [] } = json?.data ?? {};
     const totalStreams = json?.data?.movie_count ?? 0;
-    const collectedStreams = page * limit;
+    const collectedStreams = state.page * limit;
     let nextPage: Data["nextPage"] = null;
 
     if (collectedStreams < totalStreams) {
-      nextPage = page + 1;
+      nextPage = state.page + 1;
     }
 
     const englishMovies = movies.filter((movie: any) => {
@@ -76,8 +88,16 @@ async function fetchData(page: number): Promise<Data> {
         seeds,
       };
     });
+    state.retries = 0;
     return { streams, nextPage };
   } catch (err) {
+    if (err instanceof FetchError) {
+      if (++state.retries > MAX_RETRIES) {
+        return { streams: [], nextPage: null };
+      }
+      console.log("Retrying failed fetch");
+      return fetchData(state);
+    }
     console.error(err);
     return { streams: [], nextPage: null };
   }
@@ -87,7 +107,7 @@ export default async function updateMovies(page: number = 1) {
   try {
     console.log(`Page ${page}`);
 
-    const data = await fetchData(page);
+    const data = await fetchData({ page, retries: 0 });
 
     await Promise.all(data.streams.map((stream) => Stream.upsert(stream)));
 
