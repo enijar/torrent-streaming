@@ -31,11 +31,6 @@ export default function Stream() {
 
   const requestRef = React.useRef<Request>(null);
 
-  const poster = React.useMemo(() => {
-    if (!stream?.largeCoverImage) return "";
-    return asset(stream.largeCoverImage);
-  }, [stream]);
-
   React.useEffect(() => {
     if (requestRef.current !== null) {
       requestRef.current.abort();
@@ -77,10 +72,7 @@ export default function Stream() {
         <Rating rating={stream.rating} />
         <time>{stream.year}</time>
       </Flex>
-      <VideoEmbed
-        src={`${config.apiUrl}/api/watch/${stream.uuid}`}
-        poster={poster}
-      />
+      <VideoEmbed stream={stream} />
       {stream.youTubeTrailerCode.length > 0 && (
         <StreamTrailer
           href={`https://youtube.com/watch?v=${stream.youTubeTrailerCode}`}

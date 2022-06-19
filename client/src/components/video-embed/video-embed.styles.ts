@@ -1,5 +1,13 @@
 import styled from "styled-components";
 
+export const VideoEmbedCast = styled.div`
+  width: 3em;
+`;
+
+export const VideoEmbedCastControls = styled.div`
+  //
+`;
+
 export const VideoEmbedWrapper = styled.div`
   aspect-ratio: 16 / 9;
   display: flex;
