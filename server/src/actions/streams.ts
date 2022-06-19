@@ -22,10 +22,7 @@ export default async function streams(req: PrivateRequest, res: Response) {
     };
   }
 
-  const order: FindOptions["order"] = [
-    ["rating", "desc"],
-    ["year", "desc"],
-  ];
+  const order: FindOptions["order"] = [["seeds", "desc"]];
 
   const streams = await Stream.findAll({
     attributes: ["uuid", "title", "year", "rating", "largeCoverImage"],
