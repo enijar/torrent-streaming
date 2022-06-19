@@ -15,10 +15,23 @@ export default function VideoEmbed({ src, poster }: Props) {
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const key = event.key.toLowerCase();
+
+      // Toggle full screen video
       if (["f"].includes(key) && videoRef.current && screenfull.isEnabled) {
         screenfull.toggle(videoRef.current).catch((err) => {
           console.error(err);
         });
+      }
+
+      // Play/pause video
+      if ([" ", "k"].includes(key) && videoRef.current) {
+        if (videoRef.current.paused) {
+          videoRef.current.play().catch((err) => {
+            console.error(err);
+          });
+        } else {
+          videoRef.current.pause();
+        }
       }
     }
 
