@@ -18,6 +18,7 @@ import Chevron from "@/icons/chevron";
 import YoutubeLogo from "@/icons/youtube-logo";
 import Rating from "@/components/rating/rating";
 import ImdbLogo from "@/icons/imdb-logo";
+import { asset } from "@/utils";
 
 export default function Stream() {
   const { uuid } = useParams();
@@ -29,6 +30,11 @@ export default function Stream() {
   const [loading, setLoading] = React.useState(true);
 
   const requestRef = React.useRef<Request>(null);
+
+  const poster = React.useMemo(() => {
+    if (!stream?.largeCoverImage) return "";
+    return asset(stream.largeCoverImage);
+  }, [stream]);
 
   React.useEffect(() => {
     if (requestRef.current !== null) {
@@ -73,7 +79,7 @@ export default function Stream() {
       </Flex>
       <VideoEmbed
         src={`${config.apiUrl}/api/watch/${stream.uuid}`}
-        poster={stream.largeCoverImage}
+        poster={poster}
       />
       {stream.youTubeTrailerCode.length > 0 && (
         <StreamTrailer

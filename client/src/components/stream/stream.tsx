@@ -6,6 +6,7 @@ import {
 } from "@/components/stream/stream.styles";
 import { Stream as StreamType } from "@/types";
 import Rating from "@/components/rating/rating";
+import { asset } from "@/utils";
 
 type Props = StreamType & {
   //
@@ -18,10 +19,14 @@ export default function Stream({
   rating,
   year,
 }: Props) {
+  const poster = React.useMemo(() => {
+    return asset(largeCoverImage);
+  }, [largeCoverImage]);
+
   return (
     <StreamWrapper to={`/streams/${uuid}`} title={title}>
       <StreamCover>
-        <img src={largeCoverImage} alt={title} loading="lazy" />
+        <img src={poster} alt={title} loading="lazy" />
       </StreamCover>
       <StreamInfo>
         <Rating rating={rating} />
