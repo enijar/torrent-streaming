@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 export const StreamBack = styled(Link)`
+  width: max-content;
   font-size: 0.8em;
   line-height: 1em;
   text-transform: uppercase;
