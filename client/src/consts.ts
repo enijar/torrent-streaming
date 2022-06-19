@@ -1,3 +1,8 @@
 export const MAX_RATING = 10;
 
-export const CDN_URL = "https://yts.torrentbay.to";
+/**
+ * Possible URLs:
+ * - https://yts.mx
+ * - https://yts.torrentbay.to
+ */
+export const CDN_URL = "https://yts.mx";
