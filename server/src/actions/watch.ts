@@ -5,6 +5,7 @@ import * as pump from "pump";
 import type { PrivateRequest } from "../types";
 import Stream from "../entities/stream";
 import torrent from "../services/torrent";
+import User from "../entities/user";
 
 type CacheData = {
   stream: Stream;
@@ -18,11 +19,20 @@ const cache = new Map<string, CacheData>();
 
 const client = new WebTorrent();
 
+async function addStreamToUserWatchList(uuid: string, user: User) {
+  const streams = user?.streams ?? [];
+  if (!streams.includes(uuid)) {
+    await user.update({ streams: [...streams, uuid] });
+  }
+}
+
 export default async function watch(req: PrivateRequest, res: Response) {
   const { uuid } = req.params ?? {};
   let cachedData = cache.get(uuid) ?? null;
 
   const now = Date.now();
+
+  await addStreamToUserWatchList(uuid, req.user);
 
   // Update cache
   if (cachedData !== null && now - cachedData.updatedAt >= CACHE_TIME) {
