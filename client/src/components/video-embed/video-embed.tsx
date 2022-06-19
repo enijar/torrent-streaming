@@ -1,4 +1,5 @@
 import React from "react";
+import screenfull from "screenfull";
 import { VideoEmbedWrapper } from "@/components/video-embed/video-embed.styles";
 
 type Props = {
@@ -8,6 +9,24 @@ type Props = {
 
 export default function VideoEmbed({ src, poster }: Props) {
   const [interacted, setInteracted] = React.useState(false);
+
+  const videoRef = React.useRef<HTMLVideoElement>();
+
+  React.useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const key = event.key.toLowerCase();
+      if (["f"].includes(key) && videoRef.current && screenfull.isEnabled) {
+        screenfull.request(videoRef.current).catch((err) => {
+          console.error(err);
+        });
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   return (
     <VideoEmbedWrapper
@@ -30,7 +49,7 @@ export default function VideoEmbed({ src, poster }: Props) {
           />
         </svg>
       )}
-      {interacted && <video src={src} controls autoPlay />}
+      {interacted && <video src={src} controls autoPlay ref={videoRef} />}
     </VideoEmbedWrapper>
   );
 }
