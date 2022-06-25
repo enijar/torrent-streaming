@@ -8,8 +8,6 @@ export default async function authenticate(
   res: Response,
   next: NextFunction
 ) {
-  // @todo remove this
-  return next();
   try {
     const authToken = req.cookies.get("authToken");
     const { uuid = "" } = authService.verify(authToken);
