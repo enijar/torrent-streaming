@@ -21,6 +21,9 @@ export default class User extends Model {
   @Column
   loginToken: string;
 
+  @Column({ type: DataType.JSON })
+  streams: string[];
+
   toJSON<T extends any>(): T {
     const data = super.toJSON<User>();
     delete data.loginToken;

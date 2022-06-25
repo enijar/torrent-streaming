@@ -1,19 +1,20 @@
 import React from "react";
+import screenfull from "screenfull";
 import {
   VideoEmbedCast,
   VideoEmbedCastControls,
   VideoEmbedWrapper,
 } from "@/components/video-embed/video-embed.styles";
 import useCast from "@/hooks/use-cast";
-import { Stream } from "@/types";
-import { asset } from "@/utils";
+import {Stream} from "@/types";
+import {asset} from "@/utils";
 import config from "@/config";
 
 type Props = {
   stream?: Stream;
 };
 
-export default function VideoEmbed({ stream }: Props) {
+export default function VideoEmbed({stream}: Props) {
   const [interacted, setInteracted] = React.useState(false);
 
   const src = React.useMemo(() => {
@@ -28,10 +29,41 @@ export default function VideoEmbed({ stream }: Props) {
     return asset(stream.largeCoverImage);
   }, [stream]);
 
-  const cast = useCast(stream, { src, poster });
+  const cast = useCast(stream, {src, poster});
 
   React.useEffect(() => {
     return () => cast.pause();
+  }, []);
+
+  const videoRef = React.useRef<HTMLVideoElement>();
+
+  React.useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const key = event.key.toLowerCase();
+
+      // Toggle full screen video
+      if (["f"].includes(key) && videoRef.current && screenfull.isEnabled) {
+        screenfull.toggle(videoRef.current).catch((err) => {
+          console.error(err);
+        });
+      }
+
+      // Play/pause video
+      if ([" ", "k"].includes(key) && videoRef.current) {
+        if (videoRef.current.paused) {
+          videoRef.current.play().catch((err) => {
+            console.error(err);
+          });
+        } else {
+          videoRef.current.pause();
+        }
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   return (
@@ -62,7 +94,7 @@ export default function VideoEmbed({ stream }: Props) {
                 />
               </svg>
             )}
-            {interacted && <video src={src} controls autoPlay />}
+            {interacted && <video src={src} controls autoPlay/>}
           </>
         )}
         {cast.connected && (
