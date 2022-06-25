@@ -37,6 +37,7 @@ export default function VideoEmbed({ stream }: Props) {
 
   React.useEffect(() => {
     if (!cast.connected) return;
+    console.log({ src, poster });
     cast.load({
       src,
       metadata: {
