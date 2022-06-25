@@ -59,21 +59,20 @@ export default async function watch(req: PrivateRequest, res: Response) {
     cachedData = cache.get(stream.uuid);
   }
 
-  res.attachment(cachedData.file.name);
-  res.setHeader("Accept-Ranges", "bytes");
-
   const headerRange = req.headers.range;
   const fileSize = cachedData.file.length;
   const parsedRange = headerRange ? rangeParser(fileSize, headerRange) : null;
   const range = Array.isArray(parsedRange) ? parsedRange[0] : null;
 
+  res.setHeader("Accept-Ranges", "bytes");
+  res.setHeader("Content-Type", "video/mp4");
+  res.setHeader("Content-Length", fileSize);
+  res.statusCode = 200;
+
   if (range !== null) {
     const bytes = `bytes ${range.start}-${range.end}/${fileSize}`;
     res.statusCode = 206;
-    res.setHeader("Content-Length", range.end - range.start + 1);
     res.setHeader("Content-Range", bytes);
-  } else {
-    res.setHeader("Content-Length", fileSize);
   }
 
   if (req.method === "HEAD") {
