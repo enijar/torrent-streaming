@@ -2,6 +2,9 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { AppReset } from "@/components/app/app.styles";
 import Loading from "@/components/loading/loading";
+import { useChromecast } from "@/hooks/use-chromecast";
+
+useChromecast.getState().init();
 
 const Login = React.lazy(() => import("@/pages/login/login"));
 const Streams = React.lazy(() => import("@/pages/streams/streams"));

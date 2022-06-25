@@ -3,37 +3,56 @@ import screenfull from "screenfull";
 import {
   VideoEmbedCast,
   VideoEmbedCastControls,
+  VideoEmbedCastControlsPlayPause,
+  VideoEmbedCastControlsTime,
   VideoEmbedWrapper,
 } from "@/components/video-embed/video-embed.styles";
-import useCast from "@/hooks/use-cast";
-import {Stream} from "@/types";
-import {asset} from "@/utils";
+import { useChromecast } from "@/hooks/use-chromecast";
+import { Stream } from "@/types";
+import { asset, formatTime } from "@/utils";
 import config from "@/config";
+import Loading from "@/components/loading/loading";
 
 type Props = {
   stream?: Stream;
 };
 
-export default function VideoEmbed({stream}: Props) {
+export default function VideoEmbed({ stream }: Props) {
   const [interacted, setInteracted] = React.useState(false);
 
+  const cast = useChromecast();
+
   const src = React.useMemo(() => {
-    if (config.env === "development") {
+    // @note for local development testing, Chromecast requires a publicly hosted file
+    if (config.env === "development" && cast.connected) {
       return "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
     }
     return `${config.apiUrl}/api/watch/${stream?.uuid}`;
-  }, [stream]);
+  }, [cast.connected, stream]);
 
   const poster = React.useMemo(() => {
     if (!stream?.largeCoverImage) return "";
     return asset(stream.largeCoverImage);
   }, [stream]);
 
-  const cast = useCast(stream, {src, poster});
+  React.useEffect(() => {
+    if (!cast.connected) return;
+    cast.load({
+      src,
+      metadata: {
+        title: stream.title,
+        images: [{ url: poster }],
+      },
+    });
+  }, [src, poster, stream, cast.connected]);
 
   React.useEffect(() => {
-    return () => cast.pause();
-  }, []);
+    return () => {
+      if (cast.connected) {
+        cast.stop();
+      }
+    };
+  }, [cast.connected, cast.stop]);
 
   const videoRef = React.useRef<HTMLVideoElement>();
 
@@ -42,20 +61,38 @@ export default function VideoEmbed({stream}: Props) {
       const key = event.key.toLowerCase();
 
       // Toggle full screen video
-      if (["f"].includes(key) && videoRef.current && screenfull.isEnabled) {
+      if (
+        ["f"].includes(key) &&
+        videoRef.current &&
+        screenfull.isEnabled &&
+        !cast.connected
+      ) {
         screenfull.toggle(videoRef.current).catch((err) => {
           console.error(err);
         });
       }
 
       // Play/pause video
-      if ([" ", "k"].includes(key) && videoRef.current) {
-        if (videoRef.current.paused) {
-          videoRef.current.play().catch((err) => {
-            console.error(err);
-          });
-        } else {
-          videoRef.current.pause();
+      if ([" ", "k"].includes(key)) {
+        if (key === " ") {
+          event.preventDefault();
+        }
+        if (videoRef.current) {
+          if (videoRef.current.paused) {
+            videoRef.current.play().catch((err) => {
+              console.error(err);
+            });
+          } else {
+            videoRef.current.pause();
+          }
+        }
+        if (cast.connected) {
+          if (cast.playerState === "PLAYING") {
+            cast.pause();
+          }
+          if (cast.playerState === "PAUSED") {
+            cast.play();
+          }
         }
       }
     }
@@ -64,7 +101,52 @@ export default function VideoEmbed({stream}: Props) {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [cast.connected, cast.play, cast.pause, cast.playerState]);
+
+  const [duration, setDuration] = React.useState("00:00:00");
+  const [time, setTime] = React.useState("00:00:00");
+
+  React.useEffect(() => {
+    {
+      const time = formatTime(cast.mediaInfo?.duration ?? 0);
+      const hours = String(time.hours).padStart(2, "0");
+      const minutes = String(time.minutes).padStart(2, "0");
+      const seconds = String(time.seconds).padStart(2, "0");
+      setDuration([hours, minutes, seconds].join(":"));
+    }
+    {
+      const time = formatTime(cast.currentTime);
+      const hours = String(time.hours).padStart(2, "0");
+      const minutes = String(time.minutes).padStart(2, "0");
+      const seconds = String(time.seconds).padStart(2, "0");
+      setTime([hours, minutes, seconds].join(":"));
+    }
+  }, [cast.currentTime, cast.mediaInfo]);
+
+  const [currentTime, setCurrentTime] = React.useState(0);
+
+  React.useEffect(() => {
+    cast.seek(currentTime);
+  }, [cast.seek, currentTime]);
+
+  const onSeekChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCurrentTime(parseFloat(event.currentTarget.value));
+    },
+    []
+  );
+
+  const inputTimeRef = React.useRef<HTMLInputElement>();
+
+  const play = React.useCallback(() => {
+    cast.play();
+    inputTimeRef.current.value = String(cast.currentTime);
+  }, [cast.play]);
+
+  const pause = React.useCallback(() => {
+    cast.pause();
+    inputTimeRef.current.value = String(cast.currentTime);
+  }, [cast.pause]);
 
   return (
     <>
@@ -94,23 +176,38 @@ export default function VideoEmbed({stream}: Props) {
                 />
               </svg>
             )}
-            {interacted && <video src={src} controls autoPlay/>}
+            {interacted && <video src={src} controls autoPlay />}
           </>
         )}
         {cast.connected && (
           <VideoEmbedCastControls>
-            {cast.paused ? (
-              <button onClick={cast.play}>Play</button>
-            ) : (
-              <button onClick={cast.pause}>Pause</button>
+            {["BUFFERING"].includes(cast.playerState) && <Loading />}
+            {["PAUSED", "PLAYING"].includes(cast.playerState) && (
+              <VideoEmbedCastControlsPlayPause>
+                {cast.playerState === "PAUSED" && (
+                  <button onClick={play}>Play</button>
+                )}
+                {cast.playerState === "PLAYING" && (
+                  <button onClick={pause}>Pause</button>
+                )}
+              </VideoEmbedCastControlsPlayPause>
             )}
+            <VideoEmbedCastControlsTime>
+              <time>{time}</time>
+              <input
+                ref={inputTimeRef}
+                type="range"
+                min={0}
+                max={cast.mediaInfo?.duration ?? 0}
+                value={currentTime}
+                onChange={onSeekChange}
+              />
+              <time>{duration}</time>
+            </VideoEmbedCastControlsTime>
           </VideoEmbedCastControls>
         )}
       </VideoEmbedWrapper>
-      <VideoEmbedCast>
-        {/* @ts-ignore */}
-        <google-cast-launcher />
-      </VideoEmbedCast>
+      <VideoEmbedCast>{cast.button}</VideoEmbedCast>
     </>
   );
 }
