@@ -19,6 +19,7 @@ import YoutubeLogo from "@/icons/youtube-logo";
 import Rating from "@/components/rating/rating";
 import ImdbLogo from "@/icons/imdb-logo";
 import { asset } from "@/utils";
+import Video from "@/components/video/video";
 
 export default function Stream() {
   const { uuid } = useParams();
@@ -72,7 +73,11 @@ export default function Stream() {
         <Rating rating={stream.rating} />
         <time>{stream.year}</time>
       </Flex>
-      <VideoEmbed stream={stream} />
+      {/*<VideoEmbed stream={stream} />*/}
+      <Video
+        src={`${config.apiUrl}/api/watch/${stream?.uuid}`}
+        poster={stream?.largeCoverImage}
+      />
       {stream.youTubeTrailerCode.length > 0 && (
         <StreamTrailer
           href={`https://youtube.com/watch?v=${stream.youTubeTrailerCode}`}
