@@ -177,7 +177,7 @@ export default function VideoEmbed({ stream }: Props) {
                 />
               </svg>
             )}
-            {interacted && <video src={src} controls autoPlay />}
+            {interacted && <video ref={videoRef} src={src} controls autoPlay />}
           </>
         )}
         {cast.connected && (
