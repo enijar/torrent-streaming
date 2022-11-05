@@ -16,6 +16,8 @@ export default {
   appUrl: process.env.APP_URL ?? "http://localhost:8080",
   corsOrigins: (process.env.CORS_ORIGINS ?? "").split(","),
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS ?? "12"),
+  adminEmail: "$2b$12$t2lW3Nk/o4dod.74P9k6NuXLpereuxqFS2su2WtO1JClUdaixCvWi",
+  adminPassword: "$2b$12$VMjsijaCtl3pPiLB5qM/peZ639y0pAGHqhqD7ohWEZRRhbIa/VYLC",
   paths,
   database: {
     host: process.env.DATABASE_HOST ?? "127.0.0.1",

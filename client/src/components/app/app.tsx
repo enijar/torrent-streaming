@@ -7,6 +7,7 @@ import { useChromecast } from "@/hooks/use-chromecast";
 useChromecast.getState().init();
 
 const Login = React.lazy(() => import("@/pages/login/login"));
+const Admin = React.lazy(() => import("@/pages/admin/admin"));
 const Streams = React.lazy(() => import("@/pages/streams/streams"));
 const Stream = React.lazy(() => import("@/pages/stream/stream"));
 const NotFound = React.lazy(() => import("@/pages/not-found/not-found"));
@@ -18,6 +19,7 @@ export default function App() {
       <React.Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/streams" element={<Streams />}>
             <Route path=":uuid" element={<Stream />} />
           </Route>
