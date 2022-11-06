@@ -14,14 +14,14 @@ export const RatingWrapper = styled.div<Props>`
     width: 0.5em;
 
     ${({ rating }) => {
-  return Array.from(Array(MAX_RATING)).map((_, index) => {
-    const number = index + 1;
-    return css`
+      return Array.from(Array(MAX_RATING)).map((_, index) => {
+        const number = index + 1;
+        return css`
           :nth-child(${number}) {
             opacity: ${number > rating ? 0.25 : 1};
           }
         `;
-  });
-}}
+      });
+    }}
   }
 `;
