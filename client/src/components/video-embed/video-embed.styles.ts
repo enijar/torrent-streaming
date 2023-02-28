@@ -56,5 +56,11 @@ export const VideoEmbedWrapper = styled.div`
     width: 100%;
     height: 100%;
     object-fit: contain;
+
+    :focus {
+      outline: 0.1em solid #03a9f4;
+      outline-offset: 0.1em;
+      border-radius: 0.1em;
+    }
   }
 `;
