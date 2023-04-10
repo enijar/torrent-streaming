@@ -8,7 +8,7 @@ import config from "../config";
 import User from "../entities/user";
 
 export default async function login(req: Request, res: Response) {
-  const { email = "" } = req.body;
+  const { email = "", uuid = "" } = req.body;
 
   const authorisedEmailsFile = path.join(
     config.paths.data,
@@ -51,7 +51,7 @@ export default async function login(req: Request, res: Response) {
       subject: "Torrent Streaming Login",
       to: email,
     },
-    locals: { loginToken: user.loginToken, config },
+    locals: { loginToken: user.loginToken, uuid, config },
   });
 
   res.json({ messages: { server: "We've sent the login link to your email" } });

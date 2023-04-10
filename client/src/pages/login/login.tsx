@@ -1,13 +1,19 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 import { LoginWrapper } from "@/pages/login/login.styles";
 import { Error, Message } from "@/styles/elements";
 import useForm from "@/hooks/use-form";
 import { Errors, Messages, Request } from "@/types";
 import api from "@/services/api";
 import Loading from "@/components/loading/loading";
+import QrLogin from "@/components/qr-login/qr-login";
+import config from "@/config";
+
+const socket = io(config.apiUrl);
 
 export default function Login() {
+  const { uuid } = useParams<{ uuid?: string }>();
   const [messages, setMessages] = React.useState<Messages>({});
   const [errors, setErrors] = React.useState<Errors>({});
   const [submitting, setSubmitting] = React.useState(false);
@@ -22,7 +28,7 @@ export default function Login() {
     if (requestRef.current !== null) {
       requestRef.current.abort();
     }
-    const req = api.get("/api/user");
+    const req = api.get(`/api/user?uuid=${uuid ?? ""}`);
     requestRef.current = req;
     req.send().then((res) => {
       if (res.status !== 200) {
@@ -30,7 +36,7 @@ export default function Login() {
       }
       navigate("/streams");
     });
-  }, [navigate]);
+  }, [navigate, uuid]);
 
   const form = useForm(async (formData) => {
     if (submitting) return;
@@ -57,7 +63,7 @@ export default function Login() {
     }
 
     try {
-      const req = await api.post("/api/login", { email });
+      const req = await api.post("/api/login", { email, uuid: uuid ?? "" });
       const res = await req.send();
       setMessages(res.messages);
       setErrors(res.errors);
@@ -67,6 +73,35 @@ export default function Login() {
       setSubmitting(false);
     }
   });
+
+  const [socketId, setSocketId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setSocketId(socket.id ?? null);
+
+    function onConnect() {
+      setSocketId(socket.id ?? null);
+    }
+
+    function onAuthToken(authToken: string) {
+      if (requestRef.current !== null) {
+        requestRef.current.abort();
+      }
+      const req = api.post("/api/login-with-auth-token", { authToken });
+      requestRef.current = req;
+      req.send().then((res) => {
+        if (res.status !== 200) return;
+        navigate("/streams");
+      });
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("authToken", onAuthToken);
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("authToken", onAuthToken);
+    };
+  }, []);
 
   if (authenticating) return <Loading />;
 
@@ -78,6 +113,7 @@ export default function Login() {
         {messages.server && <Message>{messages.server}</Message>}
         {errors.server && <Error>{errors.server}</Error>}
         {errors.email && <Error>{errors.email}</Error>}
+        {uuid === undefined && <QrLogin socketId={socketId} />}
 
         <input type="email" name="email" onChange={form.onChange} />
         <button>{submitting ? "Logging in..." : "Login"}</button>

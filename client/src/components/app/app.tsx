@@ -19,6 +19,7 @@ export default function App() {
       <React.Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/:uuid" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/streams" element={<Streams />}>
             <Route path=":uuid" element={<Stream />} />

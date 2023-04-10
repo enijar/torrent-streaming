@@ -1,11 +1,21 @@
 import * as express from "express";
 import { json } from "body-parser";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import * as cors from "cors";
 import config from "../config";
 import router from "../router";
 import cookies from "../middleware/cookies";
 
 const app = express();
+export const server = createServer(app);
+export const socket = new Server(server, {
+  cors: {
+    origin: config.corsOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 app.use(json());
 app.use(

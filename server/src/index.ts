@@ -1,6 +1,6 @@
 import config from "./config";
 import { init } from "./services/database";
-import app from "./services/app";
+import { server } from "./services/app";
 import cron from "./services/cron";
 
 (async () => {
@@ -9,7 +9,7 @@ import cron from "./services/cron";
 
     cron();
 
-    app.listen(config.port, "0.0.0.0", () => {
+    server.listen(config.port, "0.0.0.0", () => {
       console.log(`Server running: http://localhost:${config.port}`);
     });
   } catch (err) {
