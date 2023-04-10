@@ -77,6 +77,8 @@ export default function Login() {
   const [socketId, setSocketId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    if (uuid !== undefined) return;
+
     setSocketId(socket.id ?? null);
 
     function onConnect() {
@@ -84,6 +86,7 @@ export default function Login() {
     }
 
     function onAuthToken(authToken: string) {
+      console.log("authToken", authToken);
       if (requestRef.current !== null) {
         requestRef.current.abort();
       }
@@ -102,7 +105,7 @@ export default function Login() {
       socket.off("authToken", onAuthToken);
       socket.disconnect();
     };
-  }, []);
+  }, [uuid]);
 
   if (authenticating) return <Loading />;
 
@@ -114,7 +117,7 @@ export default function Login() {
         {messages.server && <Message>{messages.server}</Message>}
         {errors.server && <Error>{errors.server}</Error>}
         {errors.email && <Error>{errors.email}</Error>}
-        {uuid === undefined && <QrLogin socketId={socketId} />}
+        {socketId !== null && <QrLogin socketId={socketId} />}
 
         <input type="email" name="email" onChange={form.onChange} />
         <button>{submitting ? "Logging in..." : "Login"}</button>
