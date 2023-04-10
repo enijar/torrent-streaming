@@ -100,6 +100,7 @@ export default function Login() {
     return () => {
       socket.off("connect", onConnect);
       socket.off("authToken", onAuthToken);
+      socket.disconnect();
     };
   }, []);
 
