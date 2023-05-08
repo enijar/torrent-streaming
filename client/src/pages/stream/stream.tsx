@@ -2,14 +2,13 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   StreamBack,
-  StreamSynopsis,
   StreamImdb,
+  StreamNotFoundWrapper,
+  StreamSynopsis,
   StreamTrailer,
   StreamWrapper,
-  StreamNotFoundWrapper,
 } from "@/pages/stream/stream.styles";
 import api from "@/services/api";
-import config from "@/config";
 import { Request, Stream as StreamType } from "@/types";
 import { Flex } from "@/styles/elements";
 import Loading from "@/components/loading/loading";
@@ -18,7 +17,6 @@ import Chevron from "@/icons/chevron";
 import YoutubeLogo from "@/icons/youtube-logo";
 import Rating from "@/components/rating/rating";
 import ImdbLogo from "@/icons/imdb-logo";
-import { asset } from "@/utils";
 
 export default function Stream() {
   const { uuid } = useParams();
