@@ -37,7 +37,6 @@ export default function VideoEmbed({ stream }: Props) {
 
   React.useEffect(() => {
     if (!cast.connected) return;
-    console.log({ src, poster });
     cast.load({
       src,
       metadata: {
@@ -103,6 +102,28 @@ export default function VideoEmbed({ stream }: Props) {
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [cast.connected, cast.play, cast.pause, cast.playerState]);
+
+  React.useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    function onTimeUpdate() {
+      localStorage.setItem(stream.uuid, `${video.currentTime}`);
+    }
+
+    video.addEventListener("timeupdate", onTimeUpdate);
+    return () => {
+      video.removeEventListener("timeupdate", onTimeUpdate);
+    };
+  }, [interacted, stream.uuid]);
+
+  React.useEffect(() => {
+    if (!videoRef.current) return;
+    if (!interacted) return;
+    const currentTime = parseFloat(localStorage.getItem(stream.uuid));
+    if (isNaN(currentTime)) return;
+    videoRef.current.currentTime = currentTime;
+  }, [interacted, stream.uuid]);
 
   const [duration, setDuration] = React.useState("00:00:00");
   const [time, setTime] = React.useState("00:00:00");
