@@ -112,6 +112,15 @@ const config = {
   resolve: {
     plugins: [new TsconfigPathsPlugin({})],
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      webtorrent: path.resolve(
+        __dirname,
+        "node_modules",
+        "webtorrent",
+        "dist",
+        "webtorrent.min.js"
+      ),
+    },
   },
   output: {
     filename: "[name].[contenthash:8].js",
