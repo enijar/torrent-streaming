@@ -12,6 +12,9 @@ export default async function streams(req: PrivateRequest, res: Response) {
     year: {
       [Op.lte]: new Date().getFullYear(),
     },
+    duration: {
+      [Op.gt]: 0,
+    },
   };
 
   if (q.length > 0) {
@@ -22,7 +25,11 @@ export default async function streams(req: PrivateRequest, res: Response) {
     };
   }
 
-  const order: FindOptions["order"] = [["seeds", "desc"]];
+  const order: FindOptions["order"] = [
+    ["year", "desc"],
+    ["rating", "desc"],
+    ["duration", "desc"],
+  ];
 
   const streams = await Stream.findAll({
     attributes: ["uuid", "title", "year", "rating", "largeCoverImage"],
