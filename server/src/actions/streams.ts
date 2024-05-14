@@ -28,6 +28,7 @@ export default async function streams(req: PrivateRequest, res: Response) {
   const order: FindOptions["order"] = [
     ["year", "desc"],
     ["rating", "desc"],
+    ["seeds", "desc"],
     ["duration", "desc"],
   ];
 
