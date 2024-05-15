@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import { FindOptions, Op, fn } from "sequelize";
+import { FindOptions, Op } from "sequelize";
 import type { PrivateRequest } from "../types";
 import Stream from "../entities/stream";
 import paginate from "../services/paginate";
@@ -10,7 +10,7 @@ export default async function streams(req: PrivateRequest, res: Response) {
 
   let query: FindOptions["where"] = {
     year: {
-      [Op.lte]: fn(`year(now())`),
+      [Op.lte]: new Date().getFullYear(),
     },
     rating: {
       [Op.gt]: 0,
