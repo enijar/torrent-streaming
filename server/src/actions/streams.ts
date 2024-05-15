@@ -18,9 +18,6 @@ export default async function streams(req: PrivateRequest, res: Response) {
     seeds: {
       [Op.gt]: 0,
     },
-    duration: {
-      [Op.gt]: 0,
-    },
   };
 
   if (q.length > 0) {
@@ -35,7 +32,6 @@ export default async function streams(req: PrivateRequest, res: Response) {
     ["year", "desc"],
     ["rating", "desc"],
     ["seeds", "desc"],
-    ["duration", "desc"],
   ];
 
   const streams = await Stream.findAll({
