@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  StreamCover,
-  StreamInfo,
-  StreamWrapper,
-} from "@/components/stream/stream.styles";
+import { StreamCover, StreamInfo, StreamWrapper } from "@/components/stream/stream.styles";
 import { Stream as StreamType } from "@/types";
 import Rating from "@/components/rating/rating";
 import { asset } from "@/utils";
@@ -12,13 +8,7 @@ type Props = StreamType & {
   //
 };
 
-export default function Stream({
-  uuid,
-  title,
-  largeCoverImage,
-  rating,
-  year,
-}: Props) {
+export default function Stream({ uuid, title, largeCoverImage, rating, year }: Props) {
   const poster = React.useMemo(() => {
     return asset(largeCoverImage);
   }, [largeCoverImage]);
@@ -29,7 +19,7 @@ export default function Stream({
         <img src={poster} alt={title} loading="lazy" />
       </StreamCover>
       <StreamInfo>
-        <Rating rating={rating} />
+        <Rating $rating={rating} />
         <time>{year}</time>
       </StreamInfo>
       <h3>{title}</h3>

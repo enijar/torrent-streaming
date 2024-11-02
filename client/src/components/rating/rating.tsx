@@ -4,12 +4,12 @@ import { MAX_RATING } from "@/consts";
 import Star from "@/icons/star";
 
 type Props = {
-  rating: number;
+  $rating: number;
 };
 
-export default function Rating({ rating }: Props) {
+export default function Rating(props: Props) {
   return (
-    <RatingWrapper rating={rating}>
+    <RatingWrapper $rating={props.$rating}>
       {Array.from(Array(MAX_RATING)).map((_, index) => {
         return <Star key={index} />;
       })}

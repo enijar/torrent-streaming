@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import { MAX_RATING } from "@/consts";
 
 type Props = {
-  rating: number;
+  $rating: number;
 };
 
 export const RatingWrapper = styled.div<Props>`
@@ -13,12 +13,12 @@ export const RatingWrapper = styled.div<Props>`
   svg {
     width: 0.5em;
 
-    ${({ rating }) => {
+    ${(props) => {
       return Array.from(Array(MAX_RATING)).map((_, index) => {
         const number = index + 1;
         return css`
           :nth-child(${number}) {
-            opacity: ${number > rating ? 0.25 : 1};
+            opacity: ${number > props.$rating ? 0.25 : 1};
           }
         `;
       });

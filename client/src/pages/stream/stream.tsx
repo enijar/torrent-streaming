@@ -67,7 +67,7 @@ export default function Stream() {
       </StreamBack>
       <h1>{stream.title}</h1>
       <Flex>
-        <Rating rating={stream.rating} />
+        <Rating $rating={stream.rating} />
         <time>{stream.year}</time>
       </Flex>
       <VideoEmbed stream={stream} />
