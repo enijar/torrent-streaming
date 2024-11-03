@@ -1,5 +1,5 @@
-import Stream, { type StreamCreationAttributes } from "../entities/stream.ts";
-import type { Torrent } from "../types.ts";
+import Stream, { type StreamCreationAttributes } from "@/entities/stream.js";
+import type { Torrent } from "@/types.js";
 
 function getTitle(movie: any): string | undefined {
   function get(movie: any, key: string): string | undefined {

@@ -1,9 +1,9 @@
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
-import { socket } from "../services/server.ts";
-import User from "../entities/user.ts";
-import config from "../config.ts";
-import authService from "../services/auth-service.ts";
+import { socket } from "@/services/server.js";
+import User from "@/entities/user.js";
+import config from "@/config.js";
+import authService from "@/services/auth-service.js";
 
 export default async function auth(ctx: Context) {
   const loginToken = ctx.req.query("loginToken") ?? "";

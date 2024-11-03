@@ -1,6 +1,6 @@
 import * as jose from "jose";
-import config from "../config.ts";
-import User from "../entities/user.ts";
+import config from "@/config.js";
+import User from "@/entities/user.js";
 
 type TokenData = {
   uuid: number;

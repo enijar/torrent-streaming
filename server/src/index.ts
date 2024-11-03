@@ -1,6 +1,6 @@
-import database from "./services/database.ts";
-import config from "./config.ts";
-import "./services/server.ts";
+import database from "@/services/database.js";
+import config from "@/config.js";
+import "@/services/server.js";
 
 database
   .sync({ alter: true })

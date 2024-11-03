@@ -2,8 +2,8 @@ import * as path from "node:path";
 import * as url from "node:url";
 import type { Dialect } from "sequelize";
 import { config } from "dotenv";
-import User from "./entities/user.ts";
-import Stream from "./entities/stream.ts";
+import User from "@/entities/user.js";
+import Stream from "@/entities/stream.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

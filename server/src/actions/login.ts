@@ -3,9 +3,9 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { compare } from "bcrypt";
 import type { Context } from "hono";
-import mail from "../services/mail.ts";
-import config from "../config.ts";
-import User from "../entities/user.ts";
+import mail from "@/services/mail.js";
+import config from "@/config.js";
+import User from "@/entities/user.js";
 
 export default async function login(ctx: Context) {
   const { email = "", uuid = "" } = await ctx.req.json();

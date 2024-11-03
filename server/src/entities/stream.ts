@@ -1,5 +1,5 @@
 import { DataTypes, Model, type Optional, Sequelize } from "sequelize";
-import type { Torrent } from "../types.ts";
+import type { Torrent } from "@/types.js";
 
 interface StreamAttributes {
   uuid: string;

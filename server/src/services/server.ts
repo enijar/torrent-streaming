@@ -2,17 +2,17 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { Server as SocketIOServer } from "socket.io";
-import config from "../config.ts";
-import login from "../actions/login.ts";
-import loginAdmin from "../actions/login-admin.ts";
-import loginQr from "../actions/login-qr.ts";
-import auth from "../actions/auth.ts";
-import loginWithAuthToken from "../actions/login-with-auth-token.ts";
-import authenticate from "../middleware/authenticate.ts";
-import user from "../actions/user.ts";
-import streams from "../actions/streams.ts";
-import stream from "../actions/stream.ts";
-import watch from "../actions/watch.ts";
+import config from "@/config.js";
+import login from "@/actions/login.js";
+import loginAdmin from "@/actions/login-admin.js";
+import loginQr from "@/actions/login-qr.js";
+import auth from "@/actions/auth.js";
+import loginWithAuthToken from "@/actions/login-with-auth-token.js";
+import authenticate from "@/middleware/authenticate.js";
+import user from "@/actions/user.js";
+import streams from "@/actions/streams.js";
+import stream from "@/actions/stream.js";
+import watch from "@/actions/watch.js";
 
 export const app = new Hono();
 

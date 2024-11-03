@@ -1,8 +1,9 @@
-import { init } from "./services/database.ts";
-import updateMovies from "./services/update-movies.ts";
-import addAuthorisedEmail from "./services/add-authorised-email.ts";
+import database from "@/services/database.js";
+import updateMovies from "@/services/update-movies.js";
+import addAuthorisedEmail from "@/services/add-authorised-email.js";
 
-init()
+database
+  .sync({ alter: true })
   .then(async () => {
     let [, , command, ...args] = process.argv;
     args = args ?? [];

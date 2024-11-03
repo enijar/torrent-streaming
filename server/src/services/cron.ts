@@ -1,7 +1,7 @@
 import { schedule } from "node-cron";
-import { time } from "../utils.ts";
-import updateMovies from "./update-movies.ts";
-import deleteOldTorrentFiles from "./delete-old-torrent-files.ts";
+import { time } from "@/utils.js";
+import updateMovies from "@/services/update-movies.js";
+import deleteOldTorrentFiles from "@/services/delete-old-torrent-files.js";
 
 export default function cron() {
   // Every 8 hour

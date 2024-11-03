@@ -1,5 +1,5 @@
 import Email from "email-templates";
-import config from "../config.ts";
+import config from "@/config.js";
 
 const mail = new Email({
   transport: config.email.transport,

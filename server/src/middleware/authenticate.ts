@@ -1,8 +1,8 @@
 import type { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { JWSInvalid } from "jose/errors";
-import authService from "../services/auth-service.ts";
-import User from "../entities/user.ts";
+import authService from "@/services/auth-service.js";
+import User from "@/entities/user.js";
 
 export default function authenticate(fn: (ctx: Context, user: User) => Promise<any>) {
   return async (ctx: Context) => {

@@ -1,7 +1,7 @@
 import WebTorrent from "webtorrent";
 import parseTorrent, { toMagnetURI } from "parse-torrent";
-import Stream from "../entities/stream.ts";
-import config from "../config.ts";
+import Stream from "@/entities/stream.js";
+import config from "@/config.js";
 
 const MAX_QUALITY = 1080;
 

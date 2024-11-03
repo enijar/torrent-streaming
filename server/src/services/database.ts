@@ -1,9 +1,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Sequelize } from "sequelize";
-import config from "../config.ts";
-import User from "../entities/user.ts";
-import Stream from "../entities/stream.ts";
+import config from "@/config.js";
+import User from "@/entities/user.js";
+import Stream from "@/entities/stream.js";
 
 const ca = fs.readFileSync(path.join(config.paths.data, "ca-certificate.crt"), "utf-8");
 

@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import { execSync } from "node:child_process";
 import * as path from "node:path";
-import config from "../config.ts";
+import config from "@/config.js";
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 const IGNORED_FILES = [".DS_Store", ".gitignore"];

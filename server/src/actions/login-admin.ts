@@ -1,9 +1,9 @@
 import { compare } from "bcrypt";
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
-import config from "../config.ts";
-import authService from "../services/auth-service.ts";
-import User from "../entities/user.ts";
+import config from "@/config.js";
+import authService from "@/services/auth-service.js";
+import User from "@/entities/user.js";
 
 export default async function loginAdmin(ctx: Context) {
   const { email = "", password = "" } = await ctx.req.json();

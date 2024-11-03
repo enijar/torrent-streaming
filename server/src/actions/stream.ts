@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import Stream from "../entities/stream.ts";
+import Stream from "@/entities/stream.js";
 
 export default async function stream(ctx: Context) {
   const uuid = ctx.req.param("uuid") ?? "";

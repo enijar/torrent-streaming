@@ -4,10 +4,10 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import WebTorrent from "webtorrent";
 import rangeParser from "range-parser";
-import torrent from "../services/torrent.ts";
-import Stream from "../entities/stream.ts";
-import User from "../entities/user.ts";
-import config from "../config.ts";
+import torrent from "@/services/torrent.js";
+import Stream from "@/entities/stream.js";
+import User from "@/entities/user.js";
+import config from "@/config.js";
 
 const client = new WebTorrent();
 
