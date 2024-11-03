@@ -1,10 +1,11 @@
-import type { Request, Response } from "express";
-import config from "../config";
+import type { Context } from "hono";
+import config from "../config.ts";
 
-export default async function loginQr(req: Request, res: Response) {
-  const { uuid } = req.params;
+export default async function loginQr(ctx: Context) {
+  const uuid = ctx.req.param("uuid") ?? "";
   if (!uuid) {
-    return res.send("Invalid QR code, try again");
+    return ctx.text("Invalid QR code, try again");
+  } else {
+    return ctx.redirect(`${config.appUrl}/${uuid}`);
   }
-  res.redirect(`${config.appUrl}/${uuid}`);
 }

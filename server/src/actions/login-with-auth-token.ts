@@ -1,13 +1,15 @@
-import type { Request, Response } from "express";
+import type { Context } from "hono";
+import { setCookie } from "hono/cookie";
 
-export default async function loginWithAuthToken(req: Request, res: Response) {
-  const { authToken = "" } = req.body;
+export default async function loginWithAuthToken(ctx: Context) {
+  const { authToken = "" } = await ctx.req.json();
 
   if (authToken === "") {
-    return res.status(401).json({ errors: { server: "Unauthorised" } });
+    ctx.status(401);
+    return ctx.json({ errors: { server: "Unauthorised" } });
   }
 
-  req.cookies.set("authToken", authToken);
+  setCookie(ctx, "authToken", authToken);
 
-  res.json({ messages: { server: "Authorised" } });
+  return ctx.json({ messages: { server: "Authorised" } });
 }

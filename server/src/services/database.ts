@@ -1,14 +1,11 @@
-import * as fs from "fs";
-import * as path from "path";
-import { Sequelize } from "sequelize-typescript";
-import config from "../config";
-import User from "../entities/user";
-import Stream from "../entities/stream";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { Sequelize } from "sequelize";
+import config from "../config.ts";
+import User from "../entities/user.ts";
+import Stream from "../entities/stream.ts";
 
-const ca = fs.readFileSync(
-  path.join(config.paths.data, "ca-certificate.crt"),
-  "utf8"
-);
+const ca = fs.readFileSync(path.join(config.paths.data, "ca-certificate.crt"), "utf-8");
 
 const database = new Sequelize({
   host: config.database.host,
@@ -20,20 +17,9 @@ const database = new Sequelize({
   storage: config.database.storage,
   dialectOptions: config.env === "development" ? undefined : { ssl: { ca } },
   logging: false,
-  models: [User, Stream],
 });
 
-export async function init() {
-  // @todo investigate this bug
-  // @note have to call alter multiple times due to there being a bug with
-  // sequelize inside the Docker container
-  await database.sync({ alter: true });
-  await Promise.all(
-    config.database.entities.map((entity) => {
-      return entity.sync({ alter: true });
-    })
-  );
-  await database.sync({ alter: true });
-}
+User.initialise(database);
+Stream.initialise(database);
 
 export default database;

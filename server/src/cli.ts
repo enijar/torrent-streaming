@@ -1,11 +1,9 @@
-import { init } from "./services/database";
-import updateMovies from "./services/update-movies";
-import addAuthorisedEmail from "./services/add-authorised-email";
+import { init } from "./services/database.ts";
+import updateMovies from "./services/update-movies.ts";
+import addAuthorisedEmail from "./services/add-authorised-email.ts";
 
-(async () => {
-  try {
-    await init();
-
+init()
+  .then(async () => {
     let [, , command, ...args] = process.argv;
     args = args ?? [];
 
@@ -21,9 +19,9 @@ import addAuthorisedEmail from "./services/add-authorised-email";
         process.exit(1);
     }
 
-    process.exit(0);
-  } catch (err) {
+    process.exit(1);
+  })
+  .catch((err) => {
     console.error(err);
     process.exit(1);
-  }
-})();
+  });

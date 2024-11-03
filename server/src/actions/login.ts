@@ -1,36 +1,30 @@
-import { randomBytes } from "crypto";
-import * as fs from "fs/promises";
-import * as path from "path";
-import type { Request, Response } from "express";
+import { randomBytes } from "node:crypto";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { compare } from "bcrypt";
-import mail from "../services/mail";
-import config from "../config";
-import User from "../entities/user";
+import type { Context } from "hono";
+import mail from "../services/mail.ts";
+import config from "../config.ts";
+import User from "../entities/user.ts";
 
-export default async function login(req: Request, res: Response) {
-  const { email = "", uuid = "" } = req.body;
+export default async function login(ctx: Context) {
+  const { email = "", uuid = "" } = await ctx.req.json();
 
-  const authorisedEmailsFile = path.join(
-    config.paths.data,
-    "authorised-emails.json"
-  );
+  const authorisedEmailsFile = path.join(config.paths.data, "authorised-emails.json");
 
-  const authorisedEmails = JSON.parse(
-    await fs.readFile(authorisedEmailsFile, "utf-8")
-  );
+  const authorisedEmails = JSON.parse(await fs.readFile(authorisedEmailsFile, "utf-8"));
 
   const hashResults = await Promise.all(
     authorisedEmails.map((authorisedEmail: string) => {
       return compare(email, authorisedEmail);
-    })
+    }),
   );
 
   const emailIsAuthorised = hashResults.includes(true);
 
   if (!emailIsAuthorised) {
-    return res
-      .status(401)
-      .json({ errors: { server: "Your email is not authorised to login" } });
+    ctx.status(401);
+    return ctx.json({ errors: { server: "Your email is not authorised to login" } });
   }
 
   let user = await User.findOne({ where: { email } });
@@ -54,5 +48,5 @@ export default async function login(req: Request, res: Response) {
     locals: { loginToken: user.loginToken, uuid, config },
   });
 
-  res.json({ messages: { server: "We've sent the login link to your email" } });
+  return ctx.json({ messages: { server: "We've sent the login link to your email" } });
 }

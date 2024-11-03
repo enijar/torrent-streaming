@@ -1,12 +1,12 @@
-import type { Response } from "express";
-import { FindOptions, Op } from "sequelize";
-import type { PrivateRequest } from "../types";
-import Stream from "../entities/stream";
-import paginate from "../services/paginate";
+import { type FindOptions, Op } from "sequelize";
+import type { Context } from "hono";
+import Stream from "../entities/stream.ts";
+import type User from "../entities/user.ts";
+import paginate from "../services/paginate.ts";
 
-export default async function streams(req: PrivateRequest, res: Response) {
-  const { limit, offset } = paginate(req);
-  const q = String(req.query?.q ?? "").trim();
+export default async function streams(ctx: Context, user: User) {
+  const { limit, offset } = paginate(ctx);
+  const q = (ctx.req.query("q") ?? "").trim();
 
   let query: FindOptions["where"] = {
     year: {
@@ -42,5 +42,5 @@ export default async function streams(req: PrivateRequest, res: Response) {
     offset,
   });
 
-  res.json({ data: { streams } });
+  return ctx.json({ data: { streams: streams } });
 }

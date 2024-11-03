@@ -1,31 +1,55 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { DataTypes, Model, type Optional, Sequelize } from "sequelize";
 
-@Table({
-  tableName: "users",
-  indexes: [
-    { name: "users_uuid", unique: true, fields: ["uuid"] },
-    { name: "users_email", unique: true, fields: ["email"] },
-  ],
-})
-export default class User extends Model {
-  @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-    primaryKey: true,
-  })
+interface UserAttributes {
   uuid: string;
-
-  @Column
   email: string;
+  loginToken?: string | null;
+  streams?: string[];
+}
 
-  @Column
-  loginToken: string;
+interface UserCreationAttributes extends Optional<UserAttributes, "uuid"> {}
 
-  @Column({ type: DataType.JSON })
-  streams: string[];
+export default class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+  declare uuid: string;
+  declare email: string;
+  declare loginToken?: string | null;
+  declare streams?: string[];
 
-  toJSON<T extends any>(): T {
-    const data = super.toJSON<User>();
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
+
+  static initialise(sequelize: Sequelize) {
+    User.init(
+      {
+        uuid: {
+          type: DataTypes.UUID,
+          defaultValue: DataTypes.UUIDV4,
+          primaryKey: true,
+        },
+        email: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        loginToken: {
+          type: DataTypes.STRING,
+        },
+        streams: {
+          type: DataTypes.JSON,
+        },
+      },
+      {
+        sequelize,
+        tableName: "users",
+        indexes: [
+          { name: "users_uuid", unique: true, fields: ["uuid"] },
+          { name: "users_email", unique: true, fields: ["email"] },
+        ],
+      },
+    );
+  }
+
+  public toJSON<T extends User>(): T {
+    const data = { ...this.get() } as Partial<UserAttributes>;
     delete data.loginToken;
     return data as T;
   }

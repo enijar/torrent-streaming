@@ -1,11 +1,12 @@
-import type { Request, Response } from "express";
 import { compare } from "bcrypt";
-import config from "../config";
-import User from "../entities/user";
-import authService from "../services/auth-service";
+import type { Context } from "hono";
+import { setCookie } from "hono/cookie";
+import config from "../config.ts";
+import authService from "../services/auth-service.ts";
+import User from "../entities/user.ts";
 
-export default async function loginAdmin(req: Request, res: Response) {
-  const { email = "", password = "" } = req.body;
+export default async function loginAdmin(ctx: Context) {
+  const { email = "", password = "" } = await ctx.req.json();
 
   const [emailCorrect, passwordCorrect] = await Promise.all([
     compare(email, config.adminEmail),
@@ -13,20 +14,18 @@ export default async function loginAdmin(req: Request, res: Response) {
   ]);
 
   if (!(emailCorrect && passwordCorrect)) {
-    return res
-      .status(401)
-      .json({ errors: { server: "Invalid admin email/password" }});
+    ctx.status(401);
+    return ctx.json({ errors: { server: "Invalid admin email/password" } });
   }
 
   let user = await User.findOne({ where: { email } });
 
   if (user === null) {
-    return res
-      .status(401)
-      .json({ errors: { server: "Invalid admin email/password" }});
+    ctx.status(401);
+    return ctx.json({ errors: { server: "Invalid admin email/password" } });
   }
 
-  req.cookies.set("authToken", authService.sign(user));
+  setCookie(ctx, "authToken", await authService.sign(user));
 
-  res.json({ messages: { server: "Logged in" }});
+  return ctx.json({ messages: { server: "Logged in" } });
 }

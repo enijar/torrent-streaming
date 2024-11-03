@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
+    "outDir": "build",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
     "sourceMap": true,
-    "module": "commonjs",
-    "target": "es2017",
-    "alwaysStrict": true,
-    "noImplicitAny": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true
   }
 }

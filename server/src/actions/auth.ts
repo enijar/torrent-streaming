@@ -1,27 +1,30 @@
-import type { Request, Response } from "express";
-import { socket } from "../services/app";
-import User from "../entities/user";
-import config from "../config";
-import authService from "../services/auth-service";
+import type { Context } from "hono";
+import { setCookie } from "hono/cookie";
+import { socket } from "../services/server.ts";
+import User from "../entities/user.ts";
+import config from "../config.ts";
+import authService from "../services/auth-service.ts";
 
-export default async function auth(req: Request, res: Response) {
-  const { loginToken = "", uuid = "" } = req.query;
+export default async function auth(ctx: Context) {
+  const loginToken = ctx.req.query("loginToken") ?? "";
+  const uuid = ctx.req.query("uuid") ?? "";
 
   const user = await User.findOne({ where: { loginToken } });
 
   if (user === null) {
-    return res.status(401).send("Invalid login token, try to login again");
+    ctx.status(401);
+    return ctx.text("Invalid login token, try to login again");
   }
 
   await user.update({ loginToken: null });
 
-  const authToken = authService.sign(user);
-  req.cookies.set("authToken", authToken);
+  const authToken = await authService.sign(user);
+  setCookie(ctx, "authToken", authToken);
 
   // Let the origin client know the authToken
   if (uuid !== "") {
     socket.to(uuid as string).emit("authToken", authToken);
   }
 
-  res.redirect(`${config.appUrl}/streams`);
+  return ctx.redirect(`${config.appUrl}/streams`);
 }

@@ -1,13 +1,14 @@
-import type { Response } from "express";
-import type { PrivateRequest } from "../types";
-import { socket } from "../services/app";
+import type { Context } from "hono";
+import { getCookie } from "hono/cookie";
+import { socket } from "../services/server.ts";
+import type User from "../entities/user.ts";
 
-export default async function user(req: PrivateRequest, res: Response) {
-  const { uuid = "" } = req.query;
+export default async function user(ctx: Context, user: User) {
+  const uuid = ctx.req.query("uuid") ?? "";
   // Let the origin client know the authToken
   if (uuid !== "") {
-    const authToken = req.cookies.get("authToken");
+    const authToken = getCookie(ctx, "authToken") ?? "";
     socket.to(uuid as string).emit("authToken", authToken);
   }
-  res.json({ data: req.user });
+  return ctx.json({ data: user });
 }

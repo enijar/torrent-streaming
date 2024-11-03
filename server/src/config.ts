@@ -1,13 +1,20 @@
-import * as path from "path";
-import { Dialect } from "sequelize";
-import User from "./entities/user";
-import Stream from "./entities/stream";
+import * as path from "node:path";
+import * as url from "node:url";
+import type { Dialect } from "sequelize";
+import { config } from "dotenv";
+import User from "./entities/user.ts";
+import Stream from "./entities/stream.ts";
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const paths = {
   emails: path.resolve(__dirname, "..", "emails"),
   data: path.resolve(__dirname, "..", "data"),
   torrents: path.resolve(__dirname, "..", "torrents"),
 };
+
+config({ path: path.resolve(__dirname, "..", ".env") });
 
 export default {
   env: process.env.NODE_ENV ?? "production",

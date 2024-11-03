@@ -1,9 +1,8 @@
-import type { Request } from "express";
-import type { PrivateRequest } from "../types";
+import type { Context } from "hono";
 
-export default function paginate(req: Request | PrivateRequest, limit = 50) {
-  let page = parseInt(String(req.query?.page ?? 1));
-  if (isNaN(page)) {
+export default function paginate(ctx: Context, limit = 50) {
+  let page = parseInt(ctx.req.query("page") ?? "1");
+  if (isNaN(page) || !isFinite(page)) {
     page = 1;
   }
   page = Math.max(1, page);

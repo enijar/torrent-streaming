@@ -1,19 +1,32 @@
-import { sign, verify } from "jsonwebtoken";
-import config from "../config";
-import User from "../entities/user";
+import * as jose from "jose";
+import config from "../config.ts";
+import User from "../entities/user.ts";
 
 type TokenData = {
   uuid: number;
 };
 
+const secret = new TextEncoder().encode(config.jwt.secret);
+
+const alg = "HS256";
+
 const authService = {
   sign(user: User) {
-    return sign({ uuid: user.uuid }, config.jwt.secret, { expiresIn: "30d" });
+    return new jose.SignJWT({ uuid: user.uuid })
+      .setProtectedHeader({ alg })
+      .setIssuedAt()
+      .setIssuer("urn:example:issuer")
+      .setAudience("urn:example:audience")
+      .setExpirationTime("30d")
+      .sign(secret);
   },
 
-  verify(token: string = ""): TokenData {
-    // @ts-ignore
-    return verify(token, config.jwt.secret);
+  async verify(token: string = "") {
+    const { payload } = await jose.jwtVerify(token, secret, {
+      issuer: "urn:example:issuer",
+      audience: "urn:example:audience",
+    });
+    return payload as TokenData;
   },
 };
 

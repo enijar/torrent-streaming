@@ -1,25 +1,16 @@
-import type { Response } from "express";
-import type { PrivateRequest } from "../types";
-import Stream from "../entities/stream";
+import type { Context } from "hono";
+import Stream from "../entities/stream.ts";
 
-export default async function stream(req: PrivateRequest, res: Response) {
-  const { uuid } = req.params ?? {};
+export default async function stream(ctx: Context) {
+  const uuid = ctx.req.param("uuid") ?? "";
   const stream = await Stream.findByPk(uuid, {
-    attributes: [
-      "uuid",
-      "title",
-      "year",
-      "rating",
-      "synopsis",
-      "youTubeTrailerCode",
-      "imdbCode",
-      "largeCoverImage",
-    ],
+    attributes: ["uuid", "title", "year", "rating", "synopsis", "youTubeTrailerCode", "imdbCode", "largeCoverImage"],
   });
 
   if (stream === null) {
-    return res.status(404).json({ errors: { server: "Stream not found" } });
+    ctx.status(404);
+    return ctx.json({ errors: { server: "Stream not found" } });
+  } else {
+    return ctx.json({ data: { stream: stream } });
   }
-
-  res.json({ data: { stream } });
 }

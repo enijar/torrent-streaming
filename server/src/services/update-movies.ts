@@ -1,24 +1,19 @@
-import fetch, { FetchError } from "node-fetch";
-import Stream from "../entities/stream";
-import { Torrent } from "../types";
+import Stream, { type StreamCreationAttributes } from "../entities/stream.ts";
+import type { Torrent } from "../types.ts";
 
-function getTitle(movie: any): string {
-  function get(movie: any, key: string): string {
+function getTitle(movie: any): string | undefined {
+  function get(movie: any, key: string): string | undefined {
     const value: string = (movie[key] ?? "").trim();
     if (value.length === 0) return undefined;
     return value;
   }
 
-  return (
-    get(movie, "title") ??
-    get(movie, "title_english") ??
-    get(movie, "title_long")
-  );
+  return get(movie, "title") ?? get(movie, "title_english") ?? get(movie, "title_long");
 }
 
 type Data = {
   nextPage: number | null;
-  streams: Stream["_attributes"][];
+  streams: Array<StreamCreationAttributes>;
 };
 
 type FetchState = {
@@ -27,6 +22,11 @@ type FetchState = {
 };
 
 const MAX_RETRIES = 3;
+
+class FetchError extends Error {
+  message = "Failed to fetch data";
+  name = "FetchError";
+}
 
 async function fetchData(state: FetchState): Promise<Data> {
   try {
@@ -39,12 +39,13 @@ async function fetchData(state: FetchState): Promise<Data> {
     url.searchParams.set("page", state.page.toString());
 
     const res = await fetch(url.toString());
+    if (!res.ok) {
+      throw new FetchError();
+    }
     let json: any;
     try {
       json = await res.json();
-    } catch (err) {
-
-    }
+    } catch (err) {}
     const { movies = [] } = json?.data ?? {};
     const totalStreams = json?.data?.movie_count ?? 0;
     const collectedStreams = state.page * limit;
