@@ -31,6 +31,8 @@ export default async function watch(ctx: Context, user: User) {
     return ctx.status(404);
   }
 
+  await addStreamToUserWatchList(uuid, user);
+
   const filePath = path.join(config.paths.torrents, file.path);
   const stat = await fs.promises.stat(filePath);
   const fileSize = stat.size;
@@ -64,7 +66,7 @@ export default async function watch(ctx: Context, user: User) {
   return streaming(ctx, async (stream) => {
     // Handle stream abortion if needed
     stream.onAbort(() => {
-      console.log("Stream aborted");
+      readStream.removeAllListeners();
       readStream.destroy();
     });
     try {
@@ -75,9 +77,9 @@ export default async function watch(ctx: Context, user: User) {
       }
       // Signal that streaming is complete
       await stream.close();
-    } catch (err) {
-      // Handle any errors during streaming
-      console.error(err);
+    } catch {
+      readStream.removeAllListeners();
+      readStream.destroy();
       stream.abort();
     }
   });
