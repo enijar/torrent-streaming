@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx watch src/index.ts",
-    "build": "tsc && tsconfig-replace-paths",
+    "build": "tsc && tsconfig-replace-paths && rm -rf build/data build/emails && mv build/src/* build && rm -rf build/src",
     "email": "email dev"
   },
   "dependencies": {

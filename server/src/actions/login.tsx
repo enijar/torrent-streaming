@@ -7,7 +7,7 @@ import type { Context } from "hono";
 import mail from "@/services/mail.js";
 import config from "@/config.js";
 import User from "@/entities/user.js";
-import Login from "../../emails/login.js";
+import Login from "../emails/login.js";
 
 export default async function login(ctx: Context) {
   const { email = "", uuid = "" } = await ctx.req.json();

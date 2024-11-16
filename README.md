@@ -33,5 +33,9 @@ cp server/.env.example server/.env
 npm install
 npm run build
 
+npm add -g pm2
+pm2 startup
+
 pm2 start --name server /var/www/torrent-streaming/server/build/index.js
+pm2 save
 ```
