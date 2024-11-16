@@ -1,19 +1,25 @@
-import Email from "email-templates";
+import React from "react";
+import { render } from "@react-email/components";
+import sendgrid from "@sendgrid/mail";
 import config from "@/config.js";
 
-const mail = new Email({
-  transport: config.email.transport,
-  views: {
-    root: config.email.templates,
-    options: {
-      extension: "ejs",
-    },
+sendgrid.setApiKey(config.email.password);
+
+type SendOptions = {
+  subject: string;
+  to: string;
+  from?: string;
+};
+
+const mail = {
+  async send(template: React.ReactElement, options: SendOptions) {
+    return sendgrid.send({
+      from: options.from ?? config.email.from,
+      to: options.to,
+      subject: options.subject,
+      html: await render(template),
+    });
   },
-  preview: config.email.preview,
-  send: config.email.send,
-  message: {
-    from: config.email.from,
-  },
-});
+};
 
 export default mail;

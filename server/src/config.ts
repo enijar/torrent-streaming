@@ -40,18 +40,8 @@ export default {
     secret: process.env.JWT_SECRET ?? "secret",
   },
   email: {
-    preview: (process.env.EMAIL_PREVIEW ?? "true") === "true",
-    send: (process.env.EMAIL_SEND ?? "false") === "true",
+    password: process.env.EMAIL_SMTP_PASSWORD ?? "secret",
     from: process.env.EMAIL_FROM ?? "hello@example.com",
-    templates: paths.emails,
-    transport: {
-      host: process.env.EMAIL_SMTP_HOST ?? "smtp.sendgrid.net",
-      port: parseInt(process.env.EMAIL_SMTP_PORT ?? "587"),
-      auth: {
-        user: process.env.EMAIL_SMTP_USERNAME ?? "apikey",
-        pass: process.env.EMAIL_SMTP_PASSWORD ?? "secret",
-      },
-    },
   },
   torrentTrackers: [
     "udp://tracker.coppersurfer.tk:6969/announce",

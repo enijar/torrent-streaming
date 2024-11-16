@@ -1,3 +1,4 @@
+import React from "react";
 import { randomBytes } from "node:crypto";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
@@ -6,6 +7,7 @@ import type { Context } from "hono";
 import mail from "@/services/mail.js";
 import config from "@/config.js";
 import User from "@/entities/user.js";
+import Login from "../../emails/login.js";
 
 export default async function login(ctx: Context) {
   const { email = "", uuid = "" } = await ctx.req.json();
@@ -39,13 +41,9 @@ export default async function login(ctx: Context) {
     user = await user.update({ loginToken });
   }
 
-  await mail.send({
-    template: "login",
-    message: {
-      subject: "Torrent Streaming Login",
-      to: email,
-    },
-    locals: { loginToken: user.loginToken, uuid, config },
+  await mail.send(<Login loginToken={user.loginToken!} uuid={uuid} />, {
+    subject: "Torrent Streaming Login",
+    to: email,
   });
 
   return ctx.json({ messages: { server: "We've sent the login link to your email" } });
