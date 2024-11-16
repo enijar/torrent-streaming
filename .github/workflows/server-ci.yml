@@ -22,7 +22,7 @@ jobs:
             git pull
             npm --prefix server install
             npm --prefix server run build
-            pm2 reload server
+            pm2 reload server --time
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
