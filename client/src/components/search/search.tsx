@@ -5,20 +5,15 @@ type Props = {
   onChange: (value: string) => void;
 };
 
-export default function Search({ onChange }: Props) {
-  const onChangeRef = React.useRef(onChange);
-  React.useMemo(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  const handleChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value.trim();
-    onChangeRef.current(value);
-  }, []);
-
+export default function Search(props: Props) {
   return (
     <SearchWrapper>
-      <input onChange={handleChange} placeholder="Search for a movie title..." />
+      <input
+        onChange={(event) => {
+          props.onChange(event.currentTarget.value.trim());
+        }}
+        placeholder="Search for a movie title..."
+      />
     </SearchWrapper>
   );
 }

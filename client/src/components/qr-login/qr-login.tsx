@@ -7,15 +7,15 @@ type Props = {
   socketId: string;
 };
 
-export default function QrLogin({ socketId }: Props) {
+export default function QrLogin(props: Props) {
   const [requested, setRequested] = React.useState(false);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 
   React.useEffect(() => {
     if (canvasRef.current === null) return;
-    const link = `${config.apiUrl}/api/login/qr/${socketId}`;
+    const link = `${config.apiUrl}/api/login/qr/${props.socketId}`;
     toCanvas(canvasRef.current, link, { width: 350 }).catch((err) => console.error(err));
-  }, [socketId]);
+  }, [props.socketId]);
 
   return (
     <QrLoginWrapper>

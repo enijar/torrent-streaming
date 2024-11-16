@@ -10,18 +10,18 @@ type Props = {
   stream?: Stream;
 };
 
-export default function VideoEmbed({ stream }: Props) {
+export default function VideoEmbed(props: Props) {
   const interacted = appState((state) => state.interacted);
   const interactedRef = React.useRef(interacted);
 
   const src = React.useMemo(() => {
-    return `${config.apiUrl}/api/watch/${stream?.uuid}`;
-  }, [stream]);
+    return `${config.apiUrl}/api/watch/${props.stream?.uuid}`;
+  }, [props.stream]);
 
   const poster = React.useMemo(() => {
-    if (!stream?.largeCoverImage) return "";
-    return asset(stream.largeCoverImage);
-  }, [stream]);
+    if (!props.stream?.largeCoverImage) return "";
+    return asset(props.stream.largeCoverImage);
+  }, [props.stream]);
 
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
@@ -57,18 +57,19 @@ export default function VideoEmbed({ stream }: Props) {
   }, []);
 
   React.useEffect(() => {
+    if (!props.stream) return;
     const video = videoRef.current;
     if (video === null) return;
 
     function onTimeUpdate() {
-      localStorage.setItem(stream.uuid, `${video.currentTime}`);
+      localStorage.setItem(props.stream.uuid, `${video.currentTime}`);
     }
 
     video.addEventListener("timeupdate", onTimeUpdate);
     return () => {
       video.removeEventListener("timeupdate", onTimeUpdate);
     };
-  }, [stream.uuid]);
+  }, [props.stream?.uuid]);
 
   React.useEffect(() => {
     const video = videoRef.current;
@@ -103,13 +104,14 @@ export default function VideoEmbed({ stream }: Props) {
   }, []);
 
   React.useEffect(() => {
+    if (!props.stream) return;
     const video = videoRef.current;
     if (video === null) return;
     if (!interactedRef.current) return;
-    const currentTime = parseFloat(localStorage.getItem(stream.uuid));
+    const currentTime = parseFloat(localStorage.getItem(props.stream.uuid));
     if (isNaN(currentTime)) return;
     video.currentTime = currentTime;
-  }, [stream.uuid]);
+  }, [props.stream?.uuid]);
 
   React.useEffect(() => {
     const video = videoRef.current;

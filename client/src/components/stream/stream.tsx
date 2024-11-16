@@ -4,25 +4,23 @@ import { Stream as StreamType } from "@/types";
 import Rating from "@/components/rating/rating";
 import { asset } from "@/utils";
 
-type Props = StreamType & {
-  //
-};
+type Props = StreamType;
 
-export default function Stream({ uuid, title, largeCoverImage, rating, year }: Props) {
+export default function Stream(props: Props) {
   const poster = React.useMemo(() => {
-    return asset(largeCoverImage);
-  }, [largeCoverImage]);
+    return asset(props.largeCoverImage);
+  }, [props.largeCoverImage]);
 
   return (
-    <StreamWrapper to={`/streams/${uuid}`} title={title}>
+    <StreamWrapper to={`/streams/${props.uuid}`} title={props.title}>
       <StreamCover>
-        <img src={poster} alt={title} loading="lazy" />
+        <img src={poster} alt={props.title} loading="lazy" />
       </StreamCover>
       <StreamInfo>
-        <Rating $rating={rating} />
-        <time>{year}</time>
+        <Rating $rating={props.rating} />
+        <time>{props.year}</time>
       </StreamInfo>
-      <h3>{title}</h3>
+      <h3>{props.title}</h3>
     </StreamWrapper>
   );
 }

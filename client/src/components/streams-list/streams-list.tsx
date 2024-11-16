@@ -11,16 +11,16 @@ type Props = {
   onLoading?: (loading: boolean) => void;
 };
 
-export default function StreamsList({ page, query, onLoading }: Props) {
+export default function StreamsList(props: Props) {
   const navigate = useNavigate();
 
   const lastPageRef = React.useRef(1);
   const lastQueryRef = React.useRef("");
 
-  const onLoadingRef = React.useRef(onLoading);
+  const onLoadingRef = React.useRef(props.onLoading);
   React.useMemo(() => {
-    onLoadingRef.current = onLoading;
-  }, [onLoading]);
+    onLoadingRef.current = props.onLoading;
+  }, [props.onLoading]);
 
   const [streams, setStreams] = React.useState<StreamType[]>([]);
 
@@ -40,13 +40,13 @@ export default function StreamsList({ page, query, onLoading }: Props) {
       requestRef.current.abort();
     }
 
-    const req = api.get(`/api/streams?page=${page}&q=${query}`);
+    const req = api.get(`/api/streams?page=${props.page}&q=${props.query}`);
     requestRef.current = req;
 
     req.send().then((res) => {
       if (res.status === 401) return navigate("/");
       const streams = res.data.streams ?? [];
-      if (query !== lastQueryRef.current) {
+      if (props.query !== lastQueryRef.current) {
         setStreams(streams);
       } else {
         setStreams((currentStreams) => {
@@ -66,15 +66,15 @@ export default function StreamsList({ page, query, onLoading }: Props) {
         });
       }
     });
-  }, [page, query]);
+  }, [props.page, props.query]);
 
   React.useEffect(() => {
     loadingRef.current = false;
     if (onLoadingRef.current) {
       onLoadingRef.current(false);
     }
-    lastPageRef.current = page;
-    lastQueryRef.current = query;
+    lastPageRef.current = props.page;
+    lastQueryRef.current = props.query;
   }, [streams]);
 
   return (
