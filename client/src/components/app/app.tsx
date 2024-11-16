@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { AppReset } from "@/components/app/app.styles";
 import Loading from "@/components/loading/loading";
+import { appState } from "@/state/app-state";
 
 const Login = React.lazy(() => import("@/pages/login/login"));
 const Admin = React.lazy(() => import("@/pages/admin/admin"));
@@ -10,6 +11,17 @@ const Stream = React.lazy(() => import("@/pages/stream/stream"));
 const NotFound = React.lazy(() => import("@/pages/not-found/not-found"));
 
 export default function App() {
+  React.useEffect(() => {
+    function onPointerDown() {
+      appState.getState().setInteracted(true);
+    }
+
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, []);
+
   return (
     <>
       <AppReset />
