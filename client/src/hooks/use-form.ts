@@ -21,7 +21,7 @@ export default function useForm(onSubmit: (formData: FormData) => void) {
       event.preventDefault();
       onSubmit(formData);
     },
-    [onSubmit, formData]
+    [onSubmit, formData],
   );
 
   const handleChange = React.useCallback(
@@ -29,7 +29,7 @@ export default function useForm(onSubmit: (formData: FormData) => void) {
       const { name, value } = event.currentTarget;
       formData[name] = value;
     },
-    [formData]
+    [formData],
   );
 
   return React.useMemo<UseForm>(() => {

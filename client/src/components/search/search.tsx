@@ -11,20 +11,14 @@ export default function Search({ onChange }: Props) {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.currentTarget.value.trim();
-      onChangeRef.current(value);
-    },
-    []
-  );
+  const handleChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value.trim();
+    onChangeRef.current(value);
+  }, []);
 
   return (
     <SearchWrapper>
-      <input
-        onChange={handleChange}
-        placeholder="Search for a movie title..."
-      />
+      <input onChange={handleChange} placeholder="Search for a movie title..." />
     </SearchWrapper>
   );
 }

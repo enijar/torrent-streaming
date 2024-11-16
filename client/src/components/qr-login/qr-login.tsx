@@ -14,17 +14,12 @@ export default function QrLogin({ socketId }: Props) {
   React.useEffect(() => {
     if (canvasRef.current === null) return;
     const link = `${config.apiUrl}/api/login/qr/${socketId}`;
-    toCanvas(canvasRef.current, link, { width: 350 }).catch((err) =>
-      console.error(err)
-    );
+    toCanvas(canvasRef.current, link, { width: 350 }).catch((err) => console.error(err));
   }, [socketId]);
 
   return (
     <QrLoginWrapper>
-      <canvas
-        ref={canvasRef}
-        style={{ display: !requested ? "none" : "block" }}
-      />
+      <canvas ref={canvasRef} style={{ display: !requested ? "none" : "block" }} />
       {!requested && (
         <button type="button" onClick={() => setRequested(true)}>
           Login with phone

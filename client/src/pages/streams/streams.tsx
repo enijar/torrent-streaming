@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  StreamsContainer,
-  StreamsWrapper,
-} from "@/pages/streams/streams.styles";
+import { StreamsContainer, StreamsWrapper } from "@/pages/streams/streams.styles";
 import Search from "@/components/search/search";
 import StreamsList from "@/components/streams-list/streams-list";
 import { Outlet } from "react-router-dom";

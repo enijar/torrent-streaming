@@ -2,11 +2,7 @@ import React from "react";
 
 export default function ImdbLogo() {
   return (
-    <svg
-      enableBackground="new 0 0 740.4 362.2"
-      viewBox="0 0 740.4 362.2"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg enableBackground="new 0 0 740.4 362.2" viewBox="0 0 740.4 362.2" xmlns="http://www.w3.org/2000/svg">
       <path
         d="m698.1 0h-655.8c-23.3 0-42.3 19-42.3 42.3v277.6c0 23.3 19 42.3 42.3 42.3h655.8c23.3 0 42.3-19 42.3-42.3v-277.6c0-23.3-19-42.3-42.3-42.3z"
         fill="#e6b91e"

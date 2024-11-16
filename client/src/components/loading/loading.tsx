@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  LoadingSpinner,
-  LoadingWrapper,
-} from "@/components/loading/loading.styles";
+import { LoadingSpinner, LoadingWrapper } from "@/components/loading/loading.styles";
 
 export default function Loading() {
   return (

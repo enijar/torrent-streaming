@@ -32,7 +32,9 @@ export const StreamWrapper = styled(Link)`
   flex-direction: column;
   gap: 0.5em;
   padding: 0.5em;
-  transition: filter 400ms ease, opacity 400ms ease;
+  transition:
+    filter 400ms ease,
+    opacity 400ms ease;
 
   :focus {
     outline: none;
