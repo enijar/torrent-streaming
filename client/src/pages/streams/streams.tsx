@@ -25,12 +25,14 @@ export default function Streams() {
   }, []);
 
   const onChange = React.useCallback((value: string) => {
-    wrapperRef.current.scrollTop = 0;
+    if (wrapperRef.current !== null) {
+      wrapperRef.current.scrollTop = 0;
+    }
     setPage(1);
     setQuery(value);
   }, []);
 
-  const wrapperRef = React.useRef<HTMLDivElement>();
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <>

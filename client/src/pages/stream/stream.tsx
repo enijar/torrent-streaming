@@ -23,11 +23,11 @@ export default function Stream() {
 
   const navigate = useNavigate();
 
-  const [stream, setStream] = React.useState<StreamType>(null);
+  const [stream, setStream] = React.useState<StreamType | null>(null);
 
   const [loading, setLoading] = React.useState(true);
 
-  const requestRef = React.useRef<Request>(null);
+  const requestRef = React.useRef<Request | null>(null);
 
   React.useEffect(() => {
     if (requestRef.current !== null) {

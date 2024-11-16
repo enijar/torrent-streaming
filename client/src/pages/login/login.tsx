@@ -22,7 +22,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const requestRef = React.useRef<Request>(null);
+  const requestRef = React.useRef<Request | null>(null);
 
   React.useEffect(() => {
     if (requestRef.current !== null) {

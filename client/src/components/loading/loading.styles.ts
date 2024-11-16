@@ -22,9 +22,11 @@ export const LoadingSpinner = styled.div`
     :nth-child(1) {
       animation-delay: -0.45s;
     }
+
     :nth-child(2) {
       animation-delay: -0.3s;
     }
+
     :nth-child(3) {
       animation-delay: -0.15s;
     }

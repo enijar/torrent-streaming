@@ -13,6 +13,7 @@ type Props = {
 export default function VideoEmbed(props: Props) {
   const interacted = appState((state) => state.interacted);
   const interactedRef = React.useRef(interacted);
+  const [played, setPlayed] = React.useState(interactedRef.current);
 
   const src = React.useMemo(() => {
     return `${config.apiUrl}/api/watch/${props.stream?.uuid}`;
@@ -30,6 +31,7 @@ export default function VideoEmbed(props: Props) {
     if (video === null) return;
 
     function onKeyDown(event: KeyboardEvent) {
+      if (video === null) return;
       const key = event.code;
 
       if (!["Space", "KeyF"].includes(key)) return;
@@ -62,7 +64,8 @@ export default function VideoEmbed(props: Props) {
     if (video === null) return;
 
     function onTimeUpdate() {
-      localStorage.setItem(props.stream.uuid, `${video.currentTime}`);
+      if (video === null) return;
+      localStorage.setItem(props.stream!.uuid, `${video.currentTime}`);
     }
 
     video.addEventListener("timeupdate", onTimeUpdate);
@@ -72,43 +75,11 @@ export default function VideoEmbed(props: Props) {
   }, [props.stream?.uuid]);
 
   React.useEffect(() => {
-    const video = videoRef.current;
-    if (video === null) return;
-
-    function hideCursor() {
-      document.body.style.cursor = "none";
-    }
-
-    function showCursor() {
-      document.body.style.cursor = "auto";
-    }
-
-    function onFullscreenChange() {
-      if (screenfull.isFullscreen) {
-        hideCursor();
-      } else {
-        showCursor();
-      }
-    }
-
-    screenfull.on("change", onFullscreenChange);
-    video.addEventListener("play", hideCursor);
-    video.addEventListener("pause", showCursor);
-    video.addEventListener("ended", showCursor);
-    return () => {
-      screenfull.off("change", onFullscreenChange);
-      video.removeEventListener("play", hideCursor);
-      video.removeEventListener("pause", showCursor);
-      video.removeEventListener("ended", showCursor);
-    };
-  }, []);
-
-  React.useEffect(() => {
     if (!props.stream) return;
     const video = videoRef.current;
     if (video === null) return;
     if (!interactedRef.current) return;
-    const currentTime = parseFloat(localStorage.getItem(props.stream.uuid));
+    const currentTime = parseFloat(localStorage.getItem(props.stream.uuid) ?? "0");
     if (isNaN(currentTime)) return;
     video.currentTime = currentTime;
   }, [props.stream?.uuid]);
@@ -123,22 +94,38 @@ export default function VideoEmbed(props: Props) {
   return (
     <VideoEmbedWrapper
       style={{
-        backgroundImage: interacted ? undefined : `url(${poster})`,
+        backgroundImage: played ? undefined : `url(${poster})`,
       }}
     >
       <svg
-        style={{ display: interacted ? "none" : undefined }}
+        style={{ display: played ? "none" : undefined }}
         enableBackground="new 0 0 32 32"
         version="1.1"
         viewBox="0 0 32 32"
         xmlns="http://www.w3.org/2000/svg"
+        onClick={(event) => {
+          event.currentTarget.style.display = "none";
+          if (videoRef.current === null) return;
+          videoRef.current.style.display = "";
+          videoRef.current.play().catch(console.error);
+          screenfull.request(videoRef.current).catch(console.error);
+        }}
       >
         <path
           d="M28.516,14L6,2.75C5.344,2.453,4.672,2,4,2C2.922,2,2,2.906,2,4v24c0,1.094,0.922,2,2,2c0.672,0,1.344-0.453,2-0.75  L28.516,18C29.063,17.734,30,17.188,30,16S29.063,14.266,28.516,14z M6,24.778V7.222L23.568,16L6,24.778z"
           fill="currentColor"
         />
       </svg>
-      <video ref={videoRef} src={src} controls autoPlay style={{ display: interacted ? undefined : "none" }} />
+      <video
+        ref={videoRef}
+        src={src}
+        controls
+        autoPlay
+        style={{ display: played ? undefined : "none" }}
+        onPlay={() => {
+          setPlayed(true);
+        }}
+      />
     </VideoEmbedWrapper>
   );
 }

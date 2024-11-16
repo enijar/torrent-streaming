@@ -24,7 +24,7 @@ export default function StreamsList(props: Props) {
 
   const [streams, setStreams] = React.useState<StreamType[]>([]);
 
-  const requestRef = React.useRef<Request>(null);
+  const requestRef = React.useRef<Request | null>(null);
 
   const loadingRef = React.useRef(false);
 

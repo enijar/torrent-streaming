@@ -3,9 +3,13 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "@/components/app/app";
 
-const root = ReactDOM.createRoot(document.querySelector("#root"));
+const root = document.querySelector("#root");
 
-root.render(
+if (root === null) {
+  throw new Error("No #root element");
+}
+
+ReactDOM.createRoot(root).render(
   <Router>
     <App />
   </Router>,
