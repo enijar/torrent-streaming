@@ -17,7 +17,7 @@ export const RatingWrapper = styled.div<Props>`
       return Array.from(Array(MAX_RATING)).map((_, index) => {
         const number = index + 1;
         return css`
-          :nth-child(${number}) {
+          &:nth-child(${number}) {
             opacity: ${number > props.$rating ? 0.25 : 1};
           }
         `;
