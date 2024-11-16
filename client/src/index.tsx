@@ -10,7 +10,12 @@ if (root === null) {
 }
 
 ReactDOM.createRoot(root).render(
-  <Router>
+  <Router
+    future={{
+      v7_relativeSplatPath: true,
+      v7_startTransition: true,
+    }}
+  >
     <App />
   </Router>,
 );
