@@ -11,9 +11,14 @@ const torrentService = {
   async parse(torrents: Torrent[]) {
     let hash: string | null = null;
     let highestQuality = 0;
+    const web = torrents.some((torrent) => torrent.type === "web");
     for (const torrent of torrents) {
       const quality = parseInt(torrent.quality);
-      if (quality > highestQuality && quality <= MAX_QUALITY) {
+      if (
+        (web ? torrent.type === "web" : torrent.type !== "web") &&
+        quality > highestQuality &&
+        quality <= MAX_QUALITY
+      ) {
         hash = torrent.hash;
         highestQuality = quality;
       }
