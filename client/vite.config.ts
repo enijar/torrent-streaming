@@ -13,7 +13,7 @@ const config: UserConfigFn = (env) => {
       port: 8080,
       host: true,
     },
-    base: "./",
+    base: "/",
     publicDir: path.join(PROJECT_ROOT, "public"),
     build: {
       outDir: path.join(PROJECT_ROOT, "build"),
