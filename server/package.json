@@ -4,7 +4,8 @@
   "scripts": {
     "start": "tsx watch src/index.ts",
     "build": "tsc && tsconfig-replace-paths && rm -rf build/data build/emails && mv build/src/* build && rm -rf build/src",
-    "email": "email dev"
+    "email": "email dev",
+    "cli": "tsx src/cli.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.13.7",
