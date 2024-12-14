@@ -12,9 +12,11 @@
     "@react-email/components": "0.0.31",
     "@sendgrid/mail": "8.1.4",
     "bcrypt": "5.1.1",
+    "cli-progress": "3.12.0",
     "dotenv": "16.4.7",
     "hono": "4.6.13",
     "jose": "5.9.6",
+    "lodash": "4.17.21",
     "mysql2": "3.11.5",
     "node-cron": "3.0.3",
     "parse-torrent": "11.0.17",
@@ -24,10 +26,13 @@
     "sequelize": "6.37.5",
     "socket.io": "4.8.1",
     "sqlite3": "5.1.7",
-    "webtorrent": "2.5.10"
+    "webtorrent": "2.5.10",
+    "zod": "3.24.1"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.2",
+    "@types/cli-progress": "3.11.6",
+    "@types/lodash": "4.17.13",
     "@types/node": "22.10.2",
     "@types/node-cron": "3.0.11",
     "@types/parse-torrent": "5.8.7",

@@ -1,121 +1,121 @@
-import Stream, { type StreamCreationAttributes } from "@/entities/stream.js";
-import type { Torrent } from "@/types.js";
+import { Presets, SingleBar } from "cli-progress";
+import { z, ZodError } from "zod";
+import type { Transaction } from "sequelize";
+import _ from "lodash";
+import database from "@/services/database.js";
+import Stream from "@/entities/stream.js";
 
-function getTitle(movie: any): string | undefined {
-  function get(movie: any, key: string): string | undefined {
-    const value: string = (movie[key] ?? "").trim();
-    if (value.length === 0) return undefined;
-    return value;
-  }
+const schema = z.object({
+  data: z.object({
+    movie_count: z.number().finite(),
+    limit: z.number().finite(),
+    page_number: z.number().finite(),
+    movies: z.array(
+      z.object({
+        id: z.number().finite(),
+        title: z.string().optional().nullable().default(null),
+        title_english: z.string().optional().nullable().default(null),
+        title_long: z.string().optional().nullable().default(null),
+        year: z.number().finite(),
+        rating: z.number().finite(),
+        runtime: z.number().finite(),
+        genres: z.array(z.string()).optional().default([]),
+        synopsis: z.string(),
+        yt_trailer_code: z.string(),
+        imdb_code: z.string(),
+        large_cover_image: z.string().url(),
+        torrents: z.array(
+          z.object({
+            url: z.string().url(),
+            hash: z.string(),
+            quality: z.string(),
+            type: z.string(),
+            seeds: z.number().finite(),
+            peers: z.number().finite(),
+            size_bytes: z.number().finite(),
+          }),
+        ),
+      }),
+    ),
+  }),
+});
 
-  return get(movie, "title") ?? get(movie, "title_english") ?? get(movie, "title_long");
-}
-
-type Data = {
-  nextPage: number | null;
-  streams: Array<StreamCreationAttributes>;
-};
-
-type FetchState = {
-  page: number;
-  retries: number;
-};
-
-const MAX_RETRIES = 3;
-
-class FetchError extends Error {
-  message = "Failed to fetch data";
-  name = "FetchError";
-}
-
-async function fetchData(state: FetchState): Promise<Data> {
-  try {
-    const limit = 50;
-    const url = new URL("https://yts.mx/api/v2/list_movies.json");
-    url.searchParams.set("sort_by", "download_count");
-    url.searchParams.set("quality", "1080p");
-    url.searchParams.set("limit", limit.toString());
-    url.searchParams.set("language", "en");
-    url.searchParams.set("page", state.page.toString());
-
+export default async function updateMovies() {
+  const progress = new SingleBar({}, Presets.shades_classic);
+  const limit = 50;
+  const concurrent = 20;
+  const url = new URL("https://yts.mx/api/v2/list_movies.json");
+  url.searchParams.set("sort", "download_count");
+  url.searchParams.set("quality", "1080p");
+  url.searchParams.set("language", "en");
+  url.searchParams.set("limit", limit.toString());
+  url.searchParams.set("page", "1");
+  const addStreams = async (page: number, transaction: Transaction) => {
+    url.searchParams.set("page", page.toString());
     const res = await fetch(url.toString());
-    if (!res.ok) {
-      throw new FetchError();
-    }
-    let json: any;
-    try {
-      json = await res.json();
-    } catch (err) {}
-    const { movies = [] } = json?.data ?? {};
-    const totalStreams = json?.data?.movie_count ?? 0;
-    const collectedStreams = state.page * limit;
-    let nextPage: Data["nextPage"] = null;
-
-    if (collectedStreams < totalStreams) {
-      nextPage = state.page + 1;
-    }
-
-    const englishMovies = movies.filter((movie: any) => {
-      return movie.language === "en";
-    });
-
-    const streams: Data["streams"] = englishMovies.map((movie: any) => {
-      let seeds = 0;
-      const torrents: Torrent[] = movie.torrents.map((torrent: any) => {
-        seeds += torrent.seeds;
-        return {
-          url: torrent.url,
-          hash: torrent.hash,
-          quality: torrent.quality,
-          type: torrent.type,
-          seeds: torrent.seeds,
-          peers: torrent.peers,
-          size: torrent.size_bytes,
-        };
-      });
-
-      return {
-        apiId: movie.id,
-        title: getTitle(movie),
-        year: movie.year,
-        rating: movie.rating,
-        duration: movie.runtime,
-        genres: movie.genres,
-        synopsis: movie.synopsis,
-        youTubeTrailerCode: movie.yt_trailer_code,
-        imdbCode: movie.imdb_code,
-        largeCoverImage: movie.large_cover_image,
-        torrents,
-        seeds,
-      };
-    });
-    state.retries = 0;
-    return { streams, nextPage };
-  } catch (err) {
-    if (err instanceof FetchError) {
-      if (++state.retries > MAX_RETRIES) {
-        return { streams: [], nextPage: null };
-      }
-      console.log("Retrying failed fetch");
-      return fetchData(state);
-    }
-    console.error(err);
-    return { streams: [], nextPage: null };
-  }
-}
-
-export default async function updateMovies(page: number = 1) {
+    const json = await res.json();
+    const { data } = schema.parse(json);
+    await Promise.all(
+      data.movies.map((movie) => {
+        let seeds = 0;
+        const torrents = movie.torrents.map((torrent) => {
+          seeds += torrent.seeds;
+          return {
+            url: torrent.url,
+            hash: torrent.hash,
+            quality: torrent.quality,
+            type: torrent.type,
+            seeds: torrent.seeds,
+            peers: torrent.peers,
+            size: torrent.size_bytes,
+          };
+        });
+        return Stream.upsert(
+          {
+            apiId: movie.id,
+            title: movie.title ?? movie.title_english ?? movie.title_long ?? "",
+            year: movie.year,
+            rating: movie.rating,
+            duration: movie.runtime,
+            genres: movie.genres,
+            synopsis: movie.synopsis,
+            youTubeTrailerCode: movie.yt_trailer_code,
+            imdbCode: movie.imdb_code,
+            largeCoverImage: movie.large_cover_image,
+            torrents,
+            seeds,
+          },
+          { transaction },
+        );
+      }),
+    );
+  };
   try {
-    console.log(`Page ${page}`);
-
-    const data = await fetchData({ page, retries: 0 });
-
-    await Promise.all(data.streams.map((stream) => Stream.upsert(stream)));
-
-    if (data.nextPage !== null) {
-      await updateMovies(data.nextPage);
+    const res = await fetch(url.toString());
+    const { data } = schema.parse(await res.json());
+    const pages = Math.ceil(data.movie_count / limit);
+    progress.start(pages, 0);
+    const requests = Array.from({ length: pages }).map((_, index) => {
+      return (transaction: Transaction) => addStreams(index + 1, transaction);
+    });
+    const chunks = _.chunk(requests, concurrent);
+    for (const requests of chunks) {
+      const transaction = await database.transaction();
+      await Promise.all(
+        requests.map(async (request) => {
+          await request(transaction);
+          progress.increment();
+        }),
+      );
+      await transaction.commit();
     }
   } catch (err) {
-    console.error(err);
+    if (err instanceof ZodError) {
+      console.error(...err.issues);
+    } else {
+      console.error(err);
+    }
+  } finally {
+    progress.stop();
   }
 }
