@@ -7,10 +7,6 @@ import Stream from "@/entities/stream.js";
 import User from "@/entities/user.js";
 import config from "@/config.js";
 
-type File = WebTorrent.TorrentFile & {
-  type: string;
-};
-
 const MAX_QUALITY = 1080;
 const client = new WebTorrent();
 
@@ -21,14 +17,13 @@ export default async function watch(ctx: Context, user: User) {
   }
 
   const uuid = ctx.req.param("uuid") ?? "";
-
   const streamRecord = await Stream.findByPk(uuid);
-  if (streamRecord === null) {
+  if (!streamRecord) {
     ctx.status(404);
     return ctx.text("404");
   }
 
-  // Add stream to user watch list
+  // Add stream to user's watch list if needed
   const streams = user?.streams ?? [];
   if (!streams.includes(uuid)) {
     await user.update({ streams: [...streams, uuid] });
@@ -39,14 +34,13 @@ export default async function watch(ctx: Context, user: User) {
 
   for (const torrent of streamRecord.torrents) {
     const quality = parseInt(torrent.quality);
-    // Using only web-type torrent and best quality <= MAX_QUALITY
     if (torrent.type === "web" && quality > highestQuality && quality <= MAX_QUALITY) {
       hash = torrent.hash;
       highestQuality = quality;
     }
   }
 
-  if (hash === null) {
+  if (!hash) {
     ctx.status(404);
     return ctx.text("Stream not found");
   }
@@ -57,33 +51,32 @@ export default async function watch(ctx: Context, user: User) {
     announce: [...(parsedLink.announce ?? []), ...config.torrentTrackers],
   });
 
-  if (magnetUri === null) {
+  if (!magnetUri) {
     ctx.status(404);
     return ctx.text("Magnet URI not found");
   }
 
   try {
     const rangeHeader = ctx.req.header("Range") ?? "";
-    const findFile = (files: File[] = []) => {
-      const file = files.find((file) => file.type === "video/mp4");
-      return file ?? null;
-    };
+
+    const findFile = (files) => files.find((file) => file.type === "video/mp4") ?? null;
 
     let torrent = await client.get(magnetUri);
-    let file: File | null;
-
-    if (torrent) {
-      file = findFile(torrent.files as File[]);
-    } else {
-      torrent = await new Promise<WebTorrent.Torrent>((resolve) => {
-        client.add(magnetUri, { path: config.paths.torrents }, (torrent) => {
-          resolve(torrent);
+    if (!torrent) {
+      torrent = await new Promise((resolve, reject) => {
+        client.add(magnetUri, { path: config.paths.torrents }, (t) => {
+          resolve(t);
         });
       });
-      file = findFile(torrent.files as File[]);
     }
 
-    if (file === null) {
+    if ((torrent!.files ?? []).length === 0) {
+      ctx.status(404);
+      return ctx.text("Video file not found");
+    }
+
+    const file = findFile(torrent!.files);
+    if (!file) {
       ctx.status(404);
       return ctx.text("Video file not found");
     }
@@ -96,15 +89,30 @@ export default async function watch(ctx: Context, user: User) {
 
     const range = ranges[0];
     const readStream = file.createReadStream(range) as Readable;
+    let cleanupCalled = false;
 
-    // Manually convert Node.js Readable to Web ReadableStream with proper cleanup
+    const cleanup = () => {
+      if (cleanupCalled) return;
+      cleanupCalled = true;
+      readStream.destroy();
+      // Destroy or remove the torrent after use if you don't need it
+      // This helps avoid accumulating resources.
+      torrent!.destroy();
+    };
+
+    if (ctx.req.raw.signal) {
+      // If the client aborts, cleanup
+      ctx.req.raw.signal.addEventListener("abort", () => {
+        cleanup();
+      });
+    }
+
     const webReadable = new ReadableStream({
       start(controller) {
         const onData = (chunk: Buffer) => {
           try {
             controller.enqueue(chunk);
           } catch (err) {
-            // If enqueue fails, cleanup to prevent further calls
             cleanup();
           }
         };
@@ -120,21 +128,17 @@ export default async function watch(ctx: Context, user: User) {
         };
 
         const onClose = () => {
-          // If the stream closes after end/error, just ensure no further events
+          // If the underlying stream closes prematurely, cleanup
           cleanup();
         };
-
-        function cleanup() {
-          readStream.off("data", onData);
-          readStream.off("end", onEnd);
-          readStream.off("error", onError);
-          readStream.off("close", onClose);
-        }
 
         readStream.on("data", onData);
         readStream.on("end", onEnd);
         readStream.on("error", onError);
         readStream.on("close", onClose);
+      },
+      cancel() {
+        cleanup();
       },
     });
 
