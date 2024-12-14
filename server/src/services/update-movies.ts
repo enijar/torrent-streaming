@@ -43,7 +43,7 @@ const schema = z.object({
 export default async function updateMovies() {
   const progress = new SingleBar({}, Presets.shades_classic);
   const limit = 50;
-  const concurrent = 20;
+  const concurrent = 50;
   const url = new URL("https://yts.mx/api/v2/list_movies.json");
   url.searchParams.set("sort", "download_count");
   url.searchParams.set("quality", "1080p");
