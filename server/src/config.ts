@@ -43,6 +43,9 @@ export default {
     password: process.env.EMAIL_SMTP_PASSWORD ?? "secret",
     from: process.env.EMAIL_FROM ?? "hello@example.com",
   },
+  webtorrent: {
+    port: process.env.WEBTORRENT_PORT ?? "9999",
+  },
   torrentTrackers: [
     "udp://tracker.coppersurfer.tk:6969/announce",
     "udp://9.rarbg.to:2920/announce",

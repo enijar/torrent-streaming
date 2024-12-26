@@ -1,14 +1,15 @@
-import { Readable } from "node:stream";
 import type { Context } from "hono";
-import WebTorrent from "webtorrent";
+import WebTorrent, { NodeServer } from "webtorrent";
 import parseTorrent, { toMagnetURI } from "parse-torrent";
-import rangeParser from "range-parser";
 import Stream from "@/entities/stream.js";
 import User from "@/entities/user.js";
 import config from "@/config.js";
 
 const MAX_QUALITY = 1080;
 const client = new WebTorrent();
+const server = client.createServer({}) as NodeServer;
+// @ts-expect-error
+server.server.listen(config.webtorrent.port);
 
 export default async function watch(ctx: Context, user: User) {
   if (ctx.req.method === "HEAD") {
@@ -57,102 +58,26 @@ export default async function watch(ctx: Context, user: User) {
   }
 
   try {
-    const rangeHeader = ctx.req.header("Range") ?? "";
-
     const findFile = (files) => files.find((file) => file.type === "video/mp4") ?? null;
 
     let torrent = await client.get(magnetUri);
     if (!torrent) {
-      torrent = await new Promise((resolve, reject) => {
+      torrent = await new Promise((resolve) => {
         client.add(magnetUri, { path: config.paths.torrents }, (t) => {
           resolve(t);
         });
       });
     }
-
-    if ((torrent!.files ?? []).length === 0) {
+    if (!torrent) {
       ctx.status(404);
-      return ctx.text("Video file not found");
+      return ctx.text("Torrent not found");
     }
-
-    const file = findFile(torrent!.files);
+    const file = findFile(torrent.files);
     if (!file) {
       ctx.status(404);
-      return ctx.text("Video file not found");
+      return ctx.text("File not found");
     }
-
-    const ranges = rangeParser(file.length, rangeHeader);
-    if (ranges === -1 || ranges === -2 || ranges.length === 0) {
-      ctx.status(416); // Range Not Satisfiable
-      return ctx.text("Range Not Satisfiable");
-    }
-
-    const range = ranges[0];
-    const readStream = file.createReadStream(range) as Readable;
-    let cleanupCalled = false;
-
-    const cleanup = () => {
-      if (cleanupCalled) return;
-      cleanupCalled = true;
-      readStream.destroy();
-      // Destroy or remove the torrent after use if you don't need it
-      // This helps avoid accumulating resources.
-      torrent!.destroy();
-    };
-
-    if (ctx.req.raw.signal) {
-      // If the client aborts, cleanup
-      ctx.req.raw.signal.addEventListener("abort", () => {
-        cleanup();
-      });
-    }
-
-    const webReadable = new ReadableStream({
-      start(controller) {
-        const onData = (chunk: Buffer) => {
-          try {
-            controller.enqueue(chunk);
-          } catch (err) {
-            cleanup();
-          }
-        };
-
-        const onEnd = () => {
-          controller.close();
-          cleanup();
-        };
-
-        const onError = (err: Error) => {
-          controller.error(err);
-          cleanup();
-        };
-
-        const onClose = () => {
-          // If the underlying stream closes prematurely, cleanup
-          cleanup();
-        };
-
-        readStream.on("data", onData);
-        readStream.on("end", onEnd);
-        readStream.on("error", onError);
-        readStream.on("close", onClose);
-      },
-      cancel() {
-        cleanup();
-      },
-    });
-
-    const contentLength = range.end - range.start + 1;
-
-    return new Response(webReadable, {
-      status: 206,
-      headers: {
-        "Accept-Ranges": "bytes",
-        "Content-Type": "video/mp4",
-        "Content-Length": `${contentLength}`,
-        "Content-Range": `bytes ${range.start}-${range.end}/${file.length}`,
-      },
-    });
+    return await fetch(`http://0.0.0.0:${config.webtorrent.port}${file.streamURL}`, ctx.req.raw);
   } catch (err) {
     console.error(err);
     ctx.status(500);
