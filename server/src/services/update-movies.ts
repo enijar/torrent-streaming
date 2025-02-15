@@ -1,9 +1,7 @@
 import { Presets, SingleBar } from "cli-progress";
 import { z, ZodError } from "zod";
-import type { Transaction } from "sequelize";
 import _ from "lodash";
-import database from "@/services/database.js";
-import Stream from "@/entities/stream.js";
+import Stream from "~/entities/stream.js";
 
 const schema = z.object({
   data: z.object({
@@ -50,7 +48,7 @@ export default async function updateMovies() {
   url.searchParams.set("language", "en");
   url.searchParams.set("limit", limit.toString());
   url.searchParams.set("page", "1");
-  const addStreams = async (page: number, transaction: Transaction) => {
+  const addStreams = async (page: number) => {
     url.searchParams.set("page", page.toString());
     const res = await fetch(url.toString());
     const json = await res.json();
@@ -70,23 +68,20 @@ export default async function updateMovies() {
             size: torrent.size_bytes,
           };
         });
-        return Stream.upsert(
-          {
-            apiId: movie.id,
-            title: movie.title ?? movie.title_english ?? movie.title_long ?? "",
-            year: movie.year,
-            rating: movie.rating,
-            duration: movie.runtime,
-            genres: movie.genres,
-            synopsis: movie.synopsis,
-            youTubeTrailerCode: movie.yt_trailer_code,
-            imdbCode: movie.imdb_code,
-            largeCoverImage: movie.large_cover_image,
-            torrents,
-            seeds,
-          },
-          { transaction },
-        );
+        return Stream.upsert({
+          apiId: movie.id,
+          title: movie.title ?? movie.title_english ?? movie.title_long ?? "",
+          year: movie.year,
+          rating: movie.rating,
+          duration: movie.runtime,
+          genres: movie.genres,
+          synopsis: movie.synopsis,
+          youTubeTrailerCode: movie.yt_trailer_code,
+          imdbCode: movie.imdb_code,
+          largeCoverImage: movie.large_cover_image,
+          torrents,
+          seeds,
+        });
       }),
     );
   };
@@ -96,18 +91,16 @@ export default async function updateMovies() {
     const pages = Math.ceil(data.movie_count / limit);
     progress.start(pages, 0);
     const requests = Array.from({ length: pages }).map((_, index) => {
-      return (transaction: Transaction) => addStreams(index + 1, transaction);
+      return () => addStreams(index + 1);
     });
     const chunks = _.chunk(requests, concurrent);
     for (const requests of chunks) {
-      const transaction = await database.transaction();
       await Promise.all(
         requests.map(async (request) => {
-          await request(transaction);
+          await request();
           progress.increment();
         }),
       );
-      await transaction.commit();
     }
   } catch (err) {
     if (err instanceof ZodError) {

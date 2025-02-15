@@ -2,17 +2,17 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { Server as SocketIOServer } from "socket.io";
-import config from "@/config.js";
-import login from "@/actions/login.js";
-import loginAdmin from "@/actions/login-admin.js";
-import loginQr from "@/actions/login-qr.js";
-import auth from "@/actions/auth.js";
-import loginWithAuthToken from "@/actions/login-with-auth-token.js";
-import authenticate from "@/middleware/authenticate.js";
-import user from "@/actions/user.js";
-import streams from "@/actions/streams.js";
-import stream from "@/actions/stream.js";
-import watch from "@/actions/watch.js";
+import config from "~/config.js";
+import login from "~/actions/login.js";
+import loginAdmin from "~/actions/login-admin.js";
+import loginQr from "~/actions/login-qr.js";
+import auth from "~/actions/auth.js";
+import loginWithAuthToken from "~/actions/login-with-auth-token.js";
+import authenticate from "~/middleware/authenticate.js";
+import user from "~/actions/user.js";
+import streams from "~/actions/streams.js";
+import stream from "~/actions/stream.js";
+import watch from "~/actions/watch.js";
 
 export const app = new Hono();
 
@@ -37,6 +37,10 @@ app.get("/api/watch/:uuid", authenticate(watch));
 const server = serve({
   fetch: app.fetch,
   port: config.port,
+});
+
+server.on("listening", () => {
+  console.log(`Server is running on http://localhost:${config.port}`);
 });
 
 export const socket = new SocketIOServer(server, {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Html, Img, Text } from "@react-email/components";
-import config from "@/config.js";
+import config from "~/config.js";
 
 type Props = {
   loginToken: string;

@@ -1,9 +1,9 @@
 import type { Context } from "hono";
 import WebTorrent, { NodeServer } from "webtorrent";
 import parseTorrent, { toMagnetURI } from "parse-torrent";
-import Stream from "@/entities/stream.js";
-import User from "@/entities/user.js";
-import config from "@/config.js";
+import Stream from "~/entities/stream.js";
+import User from "~/entities/user.js";
+import config from "~/config.js";
 
 const MAX_QUALITY = 1080;
 const client = new WebTorrent();

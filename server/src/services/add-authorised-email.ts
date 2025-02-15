@@ -1,8 +1,8 @@
 import { compare, hash } from "bcrypt";
 import * as path from "path";
 import * as fs from "fs/promises";
-import authorisedEmails from "@/../data/authorised-emails.json";
-import config from "@/config.js";
+import authorisedEmails from "~/../data/authorised-emails.json" with { type: "json" };
+import config from "~/config.js";
 
 export default async function addAuthorisedEmail(email: string) {
   // Validate

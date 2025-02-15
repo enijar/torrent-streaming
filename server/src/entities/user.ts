@@ -1,56 +1,25 @@
-import { DataTypes, Model, type Optional, Sequelize } from "sequelize";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, sql } from "@sequelize/core";
+import { Attribute, Table } from "@sequelize/core/decorators-legacy";
 
-interface UserAttributes {
-  uuid: string;
-  email: string;
-  loginToken?: string | null;
-  streams?: string[];
-}
+@Table({
+  tableName: "users",
+  indexes: [
+    { name: "users_uuid", unique: true, fields: ["uuid"] },
+    { name: "users_email", unique: true, fields: ["email"] },
+    { name: "users_loginToken", unique: false, fields: ["loginToken"] },
+    { name: "users_streams", unique: false, fields: ["streams"] },
+  ],
+})
+export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  @Attribute({ type: DataTypes.UUID, allowNull: false, primaryKey: true, defaultValue: sql.uuidV4 })
+  declare uuid: CreationOptional<string>;
 
-interface UserCreationAttributes extends Optional<UserAttributes, "uuid"> {}
-
-export default class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  declare uuid: string;
+  @Attribute({ type: DataTypes.STRING, allowNull: false })
   declare email: string;
-  declare loginToken?: string | null;
-  declare streams?: string[];
 
-  declare readonly createdAt: Date;
-  declare readonly updatedAt: Date;
+  @Attribute({ type: DataTypes.STRING, defaultValue: null })
+  declare loginToken: CreationOptional<string> | null;
 
-  static initialise(sequelize: Sequelize) {
-    User.init(
-      {
-        uuid: {
-          type: DataTypes.UUID,
-          defaultValue: DataTypes.UUIDV4,
-          primaryKey: true,
-        },
-        email: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        loginToken: {
-          type: DataTypes.STRING,
-        },
-        streams: {
-          type: DataTypes.JSON,
-        },
-      },
-      {
-        sequelize,
-        tableName: "users",
-        indexes: [
-          { name: "users_uuid", unique: true, fields: ["uuid"] },
-          { name: "users_email", unique: true, fields: ["email"] },
-        ],
-      },
-    );
-  }
-
-  public toJSON<T extends User>(): T {
-    const data = { ...this.get() } as Partial<UserAttributes>;
-    delete data.loginToken;
-    return data as T;
-  }
+  @Attribute({ type: DataTypes.JSON, allowNull: false, defaultValue: [] })
+  declare streams: CreationOptional<Array<string>>;
 }

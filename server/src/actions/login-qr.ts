@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import config from "@/config.js";
+import config from "~/config.js";
 
 export default async function loginQr(ctx: Context) {
   const uuid = ctx.req.param("uuid") ?? "";

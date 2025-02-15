@@ -11,7 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            entities:
+              - "server/src/entities/**"
+
+      - name: Build
         uses: garygrossgarten/github-action-ssh@release
         with:
           command: |
@@ -22,6 +33,30 @@ jobs:
             git pull
             npm --prefix server install
             npm --prefix server run build
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Migrate Database
+        if: steps.filter.outputs.entities == 'true'
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: |
+            export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+            cd /var/www/torrent-streaming
+            node server/build/cli.js migrate-database
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Reload Server
+        if: always()
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: |
+            export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
             pm2 reload server --time
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}

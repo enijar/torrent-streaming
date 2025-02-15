@@ -1,8 +1,8 @@
-import { type FindOptions, Op } from "sequelize";
+import { type FindOptions, Op } from "@sequelize/core";
 import type { Context } from "hono";
-import Stream from "@/entities/stream.js";
-import type User from "@/entities/user.js";
-import paginate from "@/services/paginate.js";
+import Stream from "~/entities/stream.js";
+import type User from "~/entities/user.js";
+import paginate from "~/services/paginate.js";
 
 export default async function streams(ctx: Context, user: User) {
   const { limit, offset } = paginate(ctx);

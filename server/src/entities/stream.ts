@@ -1,114 +1,69 @@
-import { DataTypes, Model, type Optional, Sequelize } from "sequelize";
-import type { Torrent } from "@/types.js";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, sql } from "@sequelize/core";
+import { Attribute, Table } from "@sequelize/core/decorators-legacy";
 
-interface StreamAttributes {
-  uuid: string;
-  apiId: number;
-  title: string;
-  year: number;
-  rating: number;
-  duration: number;
-  genres: string[];
-  synopsis: string;
-  youTubeTrailerCode: string;
-  imdbCode: string;
-  largeCoverImage: string;
-  torrents: Torrent[];
-  seeds: number;
-}
+@Table({
+  tableName: "streams",
+  indexes: [
+    { name: "streams_uuid", unique: true, fields: ["uuid"] },
+    { name: "streams_apiId", unique: true, fields: ["apiId"] },
+    { name: "streams_title", unique: false, fields: ["title"] },
+    { name: "streams_year", unique: false, fields: ["year"] },
+    { name: "streams_rating", unique: false, fields: ["rating"] },
+    { name: "streams_duration", unique: false, fields: ["duration"] },
+    { name: "streams_genres", unique: false, fields: ["genres"] },
+    { name: "streams_synopsis", unique: false, fields: ["synopsis"] },
+    { name: "streams_youTubeTrailerCode", unique: false, fields: ["youTubeTrailerCode"] },
+    { name: "streams_imdbCode", unique: false, fields: ["imdbCode"] },
+    { name: "streams_largeCoverImage", unique: false, fields: ["largeCoverImage"] },
+    { name: "streams_torrents", unique: false, fields: ["torrents"] },
+    { name: "streams_seeds", unique: false, fields: ["seeds"] },
+  ],
+})
+export default class Stream extends Model<InferAttributes<Stream>, InferCreationAttributes<Stream>> {
+  @Attribute({ type: DataTypes.UUID, allowNull: false, primaryKey: true, defaultValue: sql.uuidV4 })
+  declare uuid: CreationOptional<string>;
 
-export interface StreamCreationAttributes extends Optional<StreamAttributes, "uuid" | "seeds"> {}
-
-export default class Stream extends Model<StreamAttributes, StreamCreationAttributes> implements StreamAttributes {
-  declare uuid: string;
+  @Attribute({ type: DataTypes.INTEGER, allowNull: false })
   declare apiId: number;
+
+  @Attribute({ type: DataTypes.STRING, allowNull: false })
   declare title: string;
+
+  @Attribute({ type: DataTypes.INTEGER, allowNull: false })
   declare year: number;
+
+  @Attribute({ type: DataTypes.DOUBLE, allowNull: false })
   declare rating: number;
+
+  @Attribute({ type: DataTypes.INTEGER, allowNull: false })
   declare duration: number;
-  declare genres: string[];
+
+  @Attribute({ type: DataTypes.JSON, allowNull: false, defaultValue: [] })
+  declare genres: Array<string>;
+
+  @Attribute({ type: DataTypes.TEXT, allowNull: false })
   declare synopsis: string;
+
+  @Attribute({ type: DataTypes.STRING, allowNull: false })
   declare youTubeTrailerCode: string;
+
+  @Attribute({ type: DataTypes.STRING, allowNull: false })
   declare imdbCode: string;
+
+  @Attribute({ type: DataTypes.STRING, allowNull: false })
   declare largeCoverImage: string;
-  declare torrents: Torrent[];
+
+  @Attribute({ type: DataTypes.JSON, allowNull: false })
+  declare torrents: Array<{
+    url: string;
+    hash: string;
+    size: number;
+    type: string;
+    peers: number;
+    seeds: number;
+    quality: string;
+  }>;
+
+  @Attribute({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
   declare seeds: number;
-
-  declare readonly createdAt: Date;
-  declare readonly updatedAt: Date;
-
-  static initialise(sequelize: Sequelize) {
-    Stream.init(
-      {
-        uuid: {
-          type: DataTypes.UUID,
-          defaultValue: DataTypes.UUIDV4,
-          primaryKey: true,
-        },
-        apiId: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        title: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        year: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        rating: {
-          type: DataTypes.FLOAT,
-          allowNull: false,
-        },
-        duration: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        genres: {
-          type: DataTypes.JSON,
-          allowNull: false,
-          defaultValue: "[]",
-        },
-        synopsis: {
-          type: DataTypes.TEXT,
-          allowNull: false,
-        },
-        youTubeTrailerCode: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        imdbCode: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        largeCoverImage: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        torrents: {
-          type: DataTypes.JSON,
-          allowNull: false,
-        },
-        seeds: {
-          type: DataTypes.INTEGER,
-          defaultValue: 0,
-        },
-      },
-      {
-        sequelize,
-        tableName: "streams",
-        indexes: [
-          { name: "streams_index_apiId", unique: true, fields: ["apiId"] },
-          { name: "streams_index_title", fields: ["title"] },
-          { name: "streams_index_seeds", fields: ["seeds"] },
-        ],
-      },
-    );
-  }
-
-  public toJSON<T extends Stream>(): T {
-    const data = { ...this.get() };
-    return data as T;
-  }
 }

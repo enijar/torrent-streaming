@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@react-email/components";
 import sendgrid from "@sendgrid/mail";
-import config from "@/config.js";
+import config from "~/config.js";
 
 sendgrid.setApiKey(config.email.password);
 

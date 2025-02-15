@@ -1,13 +1,10 @@
-import database from "@/services/database.js";
-import config from "@/config.js";
-import "@/services/server.js";
-import cron from "@/services/cron.js";
+import database from "~/services/database.js";
+import "~/services/server.js";
 
 database
-  .sync({ alter: true })
+  .sync()
   .then(() => {
-    cron();
-    console.log(`Server is running on http://localhost:${config.port}`);
+    console.log("Database synced");
   })
   .catch((err) => {
     console.error(err);
