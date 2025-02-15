@@ -21,6 +21,11 @@ jobs:
           filters: |
             entities:
               - "server/src/entities/**"
+            cron:
+              - "server/src/cron.ts"
+              - "server/src/services/utils.ts"
+              - "server/src/services/update-movies.ts"
+              - "server/src/services/delete-old-torrent-files.ts"
 
       - name: Build
         uses: garygrossgarten/github-action-ssh@release
@@ -58,6 +63,18 @@ jobs:
             export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
             pm2 reload server --time
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Reload Cron
+        if: steps.filter.outputs.cron == 'true'
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: |
+            export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+            pm2 reload cron --time
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
