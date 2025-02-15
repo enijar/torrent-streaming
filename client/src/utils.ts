@@ -1,10 +1,14 @@
-import { CDN_URL } from "@/consts";
+import config from "@/config.ts";
 
 export function asset(src: string) {
   const url = new URL(src);
-  return src
-    .replace(`${url.protocol}//${url.host}`, CDN_URL)
-    .replace("/assets/images/movies/", "/movies/poster/")
-    .replace(/_/g, "-")
-    .replace("/large-cover.", ".");
+  // `${config.apiUrl}/api/yts`
+  const urlParam = encodeURIComponent(
+    src
+      .replace(`${url.protocol}//${url.host}`, "")
+      // .replace("/assets/images/movies/", "/movies/poster/")
+      // .replace(/_/g, "-")
+      // .replace("/large-cover.", "."),
+  );
+  return `${config.apiUrl}/api/yts/${urlParam}`;
 }

@@ -13,6 +13,7 @@ import user from "~/actions/user.js";
 import streams from "~/actions/streams.js";
 import stream from "~/actions/stream.js";
 import watch from "~/actions/watch.js";
+import ytsProxy from "~/actions/yts-proxy.js";
 
 export const app = new Hono();
 
@@ -33,6 +34,7 @@ app.get("/api/user", authenticate(user));
 app.get("/api/streams", authenticate(streams));
 app.get("/api/stream/:uuid", authenticate(stream));
 app.get("/api/watch/:uuid", authenticate(watch));
+app.get("/api/yts/:url", ytsProxy);
 
 const server = serve({
   fetch: app.fetch,
