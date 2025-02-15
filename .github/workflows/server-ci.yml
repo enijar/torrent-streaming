@@ -23,7 +23,6 @@ jobs:
               - "server/src/entities/**"
             cron:
               - "server/src/cron.ts"
-              - "server/src/services/utils.ts"
               - "server/src/services/update-movies.ts"
               - "server/src/services/delete-old-torrent-files.ts"
 
