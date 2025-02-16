@@ -2,10 +2,6 @@ import database from "~/services/database.js";
 import "~/services/server.js";
 import "~/services/torrent-client.js";
 
-if (process.env.NODE_ENV === "development") {
-  await import("~/torrent-server.js");
-}
-
 database
   .sync()
   .then(() => {

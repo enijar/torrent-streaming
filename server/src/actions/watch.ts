@@ -4,8 +4,23 @@ import Stream from "~/entities/stream.js";
 import User from "~/entities/user.js";
 import config from "~/config.js";
 import torrentClient from "~/services/torrent-client.js";
+import WebTorrent from "webtorrent";
 
 const MAX_QUALITY = 1080;
+const torrentServer = torrentClient.createServer({} as WebTorrent.NodeServerOptions) as WebTorrent.NodeServer;
+
+// @ts-expect-error
+torrentServer.server.on("listening", () => {
+  console.log(`Torrent server running on http://localhost:${config.webtorrent.port}`);
+});
+
+// @ts-expect-error
+torrentServer.server.on("error", (err: Error) => {
+  console.error("Torrent server error:", err);
+});
+
+// @ts-expect-error
+torrentServer.server.listen(config.webtorrent.port);
 
 export default async function watch(ctx: Context, user: User) {
   if (ctx.req.method === "HEAD") {
