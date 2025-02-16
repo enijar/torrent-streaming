@@ -1,15 +1,11 @@
 import type { Context } from "hono";
-import WebTorrent, { NodeServer } from "webtorrent";
 import parseTorrent, { toMagnetURI } from "parse-torrent";
 import Stream from "~/entities/stream.js";
 import User from "~/entities/user.js";
 import config from "~/config.js";
+import torrentClient from "~/services/torrent-client.js";
 
 const MAX_QUALITY = 1080;
-const client = new WebTorrent();
-const server = client.createServer({}) as NodeServer;
-// @ts-expect-error
-server.server.listen(config.webtorrent.port);
 
 export default async function watch(ctx: Context, user: User) {
   if (ctx.req.method === "HEAD") {
@@ -60,10 +56,10 @@ export default async function watch(ctx: Context, user: User) {
   try {
     const findFile = (files) => files.find((file) => file.type === "video/mp4") ?? null;
 
-    let torrent = await client.get(magnetUri);
+    let torrent = await torrentClient.get(magnetUri);
     if (!torrent) {
       torrent = await new Promise((resolve) => {
-        client.add(magnetUri, { path: config.paths.torrents }, (t) => {
+        torrentClient.add(magnetUri, { path: config.paths.torrents }, (t) => {
           resolve(t);
         });
       });

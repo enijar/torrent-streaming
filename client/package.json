@@ -8,24 +8,24 @@
   },
   "devDependencies": {
     "@types/qrcode": "1.5.5",
-    "@types/react": "19.0.2",
-    "@types/react-dom": "19.0.2",
+    "@types/react": "19.0.9",
+    "@types/react-dom": "19.0.3",
     "@vitejs/plugin-react": "4.3.4",
     "babel-plugin-styled-components": "2.1.4",
-    "prettier": "3.4.2",
+    "prettier": "3.5.1",
     "ts-node": "10.9.2",
-    "typescript": "5.7.2",
-    "vite": "6.0.6",
+    "typescript": "5.7.3",
+    "vite": "6.1.0",
     "vite-tsconfig-paths": "5.1.4"
   },
   "dependencies": {
     "qrcode": "1.5.4",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-router-dom": "7.1.1",
+    "react-router-dom": "7.1.5",
     "screenfull": "6.0.2",
     "socket.io-client": "4.8.1",
-    "styled-components": "6.1.13",
-    "zustand": "5.0.2"
+    "styled-components": "6.1.15",
+    "zustand": "5.0.3"
   }
 }

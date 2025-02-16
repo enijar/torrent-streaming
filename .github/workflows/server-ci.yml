@@ -21,6 +21,8 @@ jobs:
           filters: |
             entities:
               - "server/src/entities/**"
+            torrent-server:
+              - "server/src/torrent-server.ts"
             cron:
               - "server/src/cron.ts"
               - "server/src/services/update-movies.ts"
@@ -50,6 +52,18 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
             cd /var/www/torrent-streaming
             node server/build/cli.js migrate-database
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Reload Torrent Server
+        if: always()
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: |
+            export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+            pm2 reload torrent-server --time
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}

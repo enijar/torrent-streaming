@@ -6,7 +6,7 @@
     "build": "concurrently -n server,client \"npm --prefix server run build\" \"npm --prefix client run build\""
   },
   "devDependencies": {
-    "concurrently": "9.1.0",
-    "prettier": "3.4.2"
+    "concurrently": "9.1.2",
+    "prettier": "3.5.1"
   }
 }
