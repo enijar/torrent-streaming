@@ -57,7 +57,7 @@ jobs:
           privateKey: ${{ secrets.PRIVATE_KEY }}
 
       - name: Reload Torrent Server
-        if: always()
+        if: steps.filter.outputs.torrent-server == 'true'
         uses: garygrossgarten/github-action-ssh@release
         with:
           command: |
