@@ -41,15 +41,22 @@ export default async function watch(ctx: Context, user: User) {
     await user.update({ streams: [...streams, uuid] });
   }
 
-  let hash: string | null = null;
-  let highestQuality = 0;
-
-  for (const torrent of streamRecord.torrents) {
-    const quality = parseInt(torrent.quality);
-    if (torrent.type === "web" && quality > highestQuality && quality <= MAX_QUALITY) {
-      hash = torrent.hash;
-      highestQuality = quality;
+  const findHash = (type: "web" | "bluray" = "web") => {
+    let hash: string | null = null;
+    let highestQuality = 0;
+    for (const torrent of streamRecord.torrents) {
+      const quality = parseInt(torrent.quality);
+      if (torrent.type === type && quality > highestQuality && quality <= MAX_QUALITY) {
+        hash = torrent.hash;
+        highestQuality = quality;
+      }
     }
+    return hash;
+  }
+
+  let hash = findHash("web");
+  if (!hash) {
+    hash = findHash("bluray");
   }
 
   if (!hash) {
