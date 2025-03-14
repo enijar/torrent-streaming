@@ -1,101 +1,67 @@
 import type { Context } from "hono";
-import parseTorrent, { toMagnetURI } from "parse-torrent";
+import { stream } from "hono/streaming";
+import WebTorrent from "webtorrent";
 import Stream from "~/entities/stream.js";
 import User from "~/entities/user.js";
-import config from "~/config.js";
-import torrentClient from "~/services/torrent-client.js";
-import WebTorrent from "webtorrent";
+import streamToFile from "~/services/stream-to-file.js";
 
-const MAX_QUALITY = 1080;
-const torrentServer = torrentClient.createServer({} as WebTorrent.NodeServerOptions) as WebTorrent.NodeServer;
+const CHUNK_SIZE = 10 ** 6; // 1MB
 
-// @ts-expect-error
-torrentServer.server.on("listening", () => {
-  console.log(`Torrent server running on http://localhost:${config.webtorrent.port}`);
-});
-
-// @ts-expect-error
-torrentServer.server.on("error", (err: Error) => {
-  console.error("Torrent server error:", err);
-});
-
-// @ts-expect-error
-torrentServer.server.listen(config.webtorrent.port);
+const client = new WebTorrent();
 
 export default async function watch(ctx: Context, user: User) {
-  if (ctx.req.method === "HEAD") {
-    ctx.status(200);
-    return ctx.body(null);
-  }
-
-  const uuid = ctx.req.param("uuid") ?? "";
-  const streamRecord = await Stream.findByPk(uuid);
-  if (!streamRecord) {
-    ctx.status(404);
-    return ctx.text("404");
-  }
-
-  // Add stream to user's watch list if needed
-  const streams = user?.streams ?? [];
-  if (!streams.includes(uuid)) {
-    await user.update({ streams: [...streams, uuid] });
-  }
-
-  const findHash = (type: "web" | "bluray" = "web") => {
-    let hash: string | null = null;
-    let highestQuality = 0;
-    for (const torrent of streamRecord.torrents) {
-      const quality = parseInt(torrent.quality);
-      if (torrent.type === type && quality > highestQuality && quality <= MAX_QUALITY) {
-        hash = torrent.hash;
-        highestQuality = quality;
-      }
-    }
-    return hash;
-  }
-
-  let hash = findHash("web");
-  if (!hash) {
-    hash = findHash("bluray");
-  }
-
-  if (!hash) {
-    ctx.status(404);
-    return ctx.text("Stream not found");
-  }
-
-  const parsedLink = await parseTorrent(hash);
-  const magnetUri = toMagnetURI({
-    ...parsedLink,
-    announce: [...(parsedLink.announce ?? []), ...config.torrentTrackers],
-  });
-
-  if (!magnetUri) {
-    ctx.status(404);
-    return ctx.text("Magnet URI not found");
-  }
-
   try {
-    const findFile = (files) => files.find((file) => file.type === "video/mp4") ?? null;
+    if (ctx.req.method === "HEAD") {
+      ctx.status(200);
+      return ctx.body(null);
+    }
 
-    let torrent = await torrentClient.get(magnetUri);
-    if (!torrent) {
-      torrent = await new Promise((resolve) => {
-        torrentClient.add(magnetUri, { path: config.paths.torrents }, (t) => {
-          resolve(t);
-        });
+    const uuid = ctx.req.param("uuid") ?? "";
+    const streamRecord = await Stream.findByPk(uuid);
+    if (!streamRecord) {
+      ctx.status(404);
+      return ctx.text("404");
+    }
+
+    // Add stream to user's watch list if needed
+    const streams = user?.streams ?? [];
+    if (!streams.includes(uuid)) {
+      await user.update({ streams: [...streams, uuid] });
+    }
+
+    const file = await streamToFile(client, streamRecord);
+    if (file === null) {
+      ctx.status(404);
+      return ctx.text("Stream not found");
+    }
+    const range = ctx.req.header("range");
+    if (range === undefined) {
+      ctx.status(400);
+      return ctx.text("Missing range header");
+    }
+    const [start, end] = range
+      .replace(/bytes=/, "")
+      .split("-")
+      .map(Number);
+    const rangeStart = start || 0;
+    const rangeEnd =
+      end && !isNaN(end) ? Math.min(end, file.length - 1) : Math.min(rangeStart + CHUNK_SIZE, file.length - 1);
+    const contentLength = rangeEnd - rangeStart + 1;
+    ctx.status(206);
+    ctx.header("Content-Range", `bytes ${rangeStart}-${rangeEnd}/${file.length}`);
+    ctx.header("Accept-Ranges", "bytes");
+    ctx.header("Content-Length", contentLength.toString());
+    ctx.header("Content-Type", "video/mp4");
+    return stream(ctx, async (streamController) => {
+      const fileStream = file.createReadStream({
+        start: rangeStart,
+        end: rangeEnd,
       });
-    }
-    if (!torrent) {
-      ctx.status(404);
-      return ctx.text("Torrent not found");
-    }
-    const file = findFile(torrent.files);
-    if (!file) {
-      ctx.status(404);
-      return ctx.text("File not found");
-    }
-    return await fetch(`http://0.0.0.0:${config.webtorrent.port}${file.streamURL}`, ctx.req.raw);
+      for await (const chunk of fileStream) {
+        await streamController.write(chunk);
+      }
+      await streamController.close();
+    });
   } catch (err) {
     console.error(err);
     ctx.status(500);
