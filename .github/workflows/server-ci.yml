@@ -26,6 +26,17 @@ jobs:
               - "server/src/services/update-movies.ts"
               - "server/src/services/delete-old-torrent-files.ts"
 
+      - name: Prepare SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          if [ -n "${{ secrets.SSH_KNOWN_HOSTS }}" ]; then
+            printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          fi
+
       - name: Build
         uses: garygrossgarten/github-action-ssh@release
         with:
@@ -35,9 +46,9 @@ jobs:
             git pull
             npm --prefix server install
             npm --prefix server run build
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          privateKey: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_KEY }}
 
       - name: Migrate Database
         if: steps.filter.outputs.entities == 'true'
@@ -46,9 +57,9 @@ jobs:
           command: |
             cd /var/www/torrent-streaming
             node server/build/cli.js migrate-database
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          privateKey: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_KEY }}
 
       - name: Reload Server
         if: always()
@@ -56,9 +67,9 @@ jobs:
         with:
           command: |
             pm2 reload torrent-streaming --time
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          privateKey: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_KEY }}
 
       - name: Reload Cron
         if: steps.filter.outputs.cron == 'true'
@@ -66,6 +77,6 @@ jobs:
         with:
           command: |
             pm2 reload torrent-streaming-cron --time
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          privateKey: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_KEY }}
