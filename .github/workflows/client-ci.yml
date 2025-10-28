@@ -11,7 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes:
+              - ".github/workflows/client-ci.yml"
+              - "public/**"
+              - "client/src/**"
+              - "client/package.json"
+              - "client/package-lock.json"
+              - "client/vite.config.ts"
+              - "client/tsconfig.json"
+
+      - name: Prepare SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          if [ -n "${{ secrets.SSH_KNOWN_HOSTS }}" ]; then
+            printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          fi
+
       - name: Deploy
+        if: steps.filter.outputs.changes == 'true'
         uses: garygrossgarten/github-action-ssh@release
         with:
           command: |

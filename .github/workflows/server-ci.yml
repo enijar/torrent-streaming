@@ -20,8 +20,10 @@ jobs:
         with:
           filters: |
             entities:
+              - ".github/workflows/server-ci.yml"
               - "server/src/entities/**"
             cron:
+              - ".github/workflows/server-ci.yml"
               - "server/src/cron.ts"
               - "server/src/services/update-movies.ts"
               - "server/src/services/delete-old-torrent-files.ts"
