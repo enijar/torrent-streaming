@@ -9,7 +9,13 @@ export default async function loginWithAuthToken(ctx: Context) {
     return ctx.json({ errors: { server: "Unauthorised" } });
   }
 
-  setCookie(ctx, "authToken", authToken);
+  setCookie(ctx, "authToken", authToken, {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    sameSite: "Lax",
+  });
 
   return ctx.json({ messages: { server: "Authorised" } });
 }

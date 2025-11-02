@@ -25,7 +25,13 @@ export default async function loginAdmin(ctx: Context) {
     return ctx.json({ errors: { server: "Invalid admin email/password" } });
   }
 
-  setCookie(ctx, "authToken", await authService.sign(user));
+  setCookie(ctx, "authToken", await authService.sign(user), {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    sameSite: "Lax",
+  });
 
   return ctx.json({ messages: { server: "Logged in" } });
 }

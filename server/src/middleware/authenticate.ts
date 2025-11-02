@@ -16,7 +16,13 @@ export default function authenticate(fn: (ctx: Context, user: User) => Promise<a
         ctx.status(401);
         return ctx.json({ errors: { server: "Unauthorised" } });
       } else {
-        setCookie(ctx, "authToken", await authService.sign(user));
+        setCookie(ctx, "authToken", await authService.sign(user), {
+          httpOnly: true,
+          secure: true,
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30,
+          sameSite: "Lax",
+        });
         return fn(ctx, user);
       }
     } catch (err) {

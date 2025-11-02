@@ -19,7 +19,13 @@ export default async function auth(ctx: Context) {
   await user.update({ loginToken: null });
 
   const authToken = await authService.sign(user);
-  setCookie(ctx, "authToken", authToken);
+  setCookie(ctx, "authToken", authToken, {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    sameSite: "Lax",
+  });
 
   // Let the origin client know the authToken
   if (uuid !== "") {
