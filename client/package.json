@@ -7,25 +7,25 @@
     "build": "tsc && vite build"
   },
   "devDependencies": {
-    "@types/qrcode": "1.5.5",
-    "@types/react": "19.0.9",
-    "@types/react-dom": "19.0.3",
-    "@vitejs/plugin-react": "4.3.4",
+    "@types/qrcode": "1.5.6",
+    "@types/react": "19.2.6",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.1.1",
     "babel-plugin-styled-components": "2.1.4",
-    "prettier": "3.5.1",
+    "prettier": "3.6.2",
     "ts-node": "10.9.2",
-    "typescript": "5.7.3",
-    "vite": "6.1.0",
+    "typescript": "5.9.3",
+    "vite": "7.2.4",
     "vite-tsconfig-paths": "5.1.4"
   },
   "dependencies": {
     "qrcode": "1.5.4",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-router-dom": "7.1.5",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-router-dom": "7.9.6",
     "screenfull": "6.0.2",
     "socket.io-client": "4.8.1",
-    "styled-components": "6.1.15",
-    "zustand": "5.0.3"
+    "styled-components": "6.1.19",
+    "zustand": "5.0.8"
   }
 }

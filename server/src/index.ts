@@ -1,6 +1,5 @@
 import database from "~/services/database.js";
 import "~/services/server.js";
-import "~/services/torrent-client.js";
 
 database
   .sync()
