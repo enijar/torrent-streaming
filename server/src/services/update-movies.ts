@@ -5,32 +5,32 @@ import Stream from "~/entities/stream.js";
 
 const schema = z.object({
   data: z.object({
-    movie_count: z.number().finite(),
-    limit: z.number().finite(),
-    page_number: z.number().finite(),
+    movie_count: z.number(),
+    limit: z.number(),
+    page_number: z.number(),
     movies: z.array(
       z.object({
-        id: z.number().finite(),
+        id: z.number(),
         title: z.string().optional().nullable().default(null),
         title_english: z.string().optional().nullable().default(null),
         title_long: z.string().optional().nullable().default(null),
-        year: z.number().finite(),
-        rating: z.number().finite(),
-        runtime: z.number().finite(),
+        year: z.number(),
+        rating: z.number(),
+        runtime: z.number(),
         genres: z.array(z.string()).optional().default([]),
         synopsis: z.string(),
         yt_trailer_code: z.string(),
         imdb_code: z.string(),
-        large_cover_image: z.string().url(),
+        large_cover_image: z.url(),
         torrents: z.array(
           z.object({
-            url: z.string().url(),
+            url: z.url(),
             hash: z.string(),
             quality: z.string(),
             type: z.string(),
-            seeds: z.number().finite(),
-            peers: z.number().finite(),
-            size_bytes: z.number().finite(),
+            seeds: z.number(),
+            peers: z.number(),
+            size_bytes: z.number(),
           }),
         ),
       }),
@@ -41,8 +41,8 @@ const schema = z.object({
 export default async function updateMovies() {
   const progress = new SingleBar({}, Presets.shades_classic);
   const limit = 50;
-  const concurrent = 50;
-  const url = new URL("https://yts.unblockninja.com/api/v2/list_movies.json");
+  const concurrent = 10;
+  const url = new URL("https://yts.lt/api/v2/list_movies.json");
   url.searchParams.set("sort", "download_count");
   url.searchParams.set("quality", "1080p");
   url.searchParams.set("language", "en");
