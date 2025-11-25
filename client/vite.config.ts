@@ -5,13 +5,22 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 const PROJECT_ROOT = path.resolve(__dirname);
 const DEV_MODE = process.env.NODE_ENV === "development";
+const SERVER_URL = "http://0.0.0.0:3000";
 
 const config: UserConfigFn = (env) => {
   process.env = { ...process.env, ...loadEnv(env.mode, process.cwd()) };
   return defineConfig({
     server: {
       port: 8080,
-      host: true,
+      host: "0.0.0.0",
+      proxy: {
+        "/api": {
+          target: SERVER_URL,
+        },
+        "/socket.io": {
+          target: SERVER_URL,
+        },
+      },
     },
     base: "/",
     publicDir: path.join(PROJECT_ROOT, "public"),

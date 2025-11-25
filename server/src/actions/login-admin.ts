@@ -27,7 +27,7 @@ export default async function loginAdmin(ctx: Context) {
 
   setCookie(ctx, "authToken", await authService.sign(user), {
     httpOnly: true,
-    secure: true,
+    secure: false,
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
     sameSite: "Lax",

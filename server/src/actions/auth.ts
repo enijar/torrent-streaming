@@ -21,7 +21,7 @@ export default async function auth(ctx: Context) {
   const authToken = await authService.sign(user);
   setCookie(ctx, "authToken", authToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
     sameSite: "Lax",

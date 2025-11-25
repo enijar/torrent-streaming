@@ -11,7 +11,7 @@ export default async function loginWithAuthToken(ctx: Context) {
 
   setCookie(ctx, "authToken", authToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
     sameSite: "Lax",

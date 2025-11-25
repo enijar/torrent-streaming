@@ -18,7 +18,7 @@ export default function authenticate(fn: (ctx: Context, user: User) => Promise<a
       } else {
         setCookie(ctx, "authToken", await authService.sign(user), {
           httpOnly: true,
-          secure: true,
+          secure: false,
           path: "/",
           maxAge: 60 * 60 * 24 * 30,
           sameSite: "Lax",
