@@ -5,7 +5,8 @@
     "start": "tsx watch src/index.ts",
     "build": "./bin/build.sh",
     "email": "email dev",
-    "cli": "tsx src/cli.ts"
+    "cli": "tsx src/cli.ts",
+    "cron": "tsx src/cron.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.19.6",
