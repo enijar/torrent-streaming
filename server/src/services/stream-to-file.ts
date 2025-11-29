@@ -4,7 +4,7 @@ import config from "~/config.js";
 
 const MAX_QUALITY = 1080;
 
-async function findFile(torrent: WebTorrent.Torrent, maxWaitTime = 10000, iterationTimeout = 50, iterations = 0) {
+async function findVideoFile(torrent: WebTorrent.Torrent, maxWaitTime = 10000, iterationTimeout = 50, iterations = 0) {
   if (iterationTimeout * iterations > maxWaitTime) {
     return null;
   }
@@ -14,7 +14,35 @@ async function findFile(torrent: WebTorrent.Torrent, maxWaitTime = 10000, iterat
     }
   }
   await new Promise((resolve) => setTimeout(resolve, iterationTimeout));
-  return findFile(torrent, maxWaitTime, ++iterations);
+  return findVideoFile(torrent, maxWaitTime, ++iterations);
+}
+
+async function findSubtitleFile(
+  torrent: WebTorrent.Torrent,
+  maxWaitTime = 10000,
+  iterationTimeout = 50,
+  iterations = 0,
+) {
+  if (iterationTimeout * iterations > maxWaitTime) {
+    return null;
+  }
+  let largest = -1;
+  let found: WebTorrent.TorrentFile | null = null;
+  for (let i = 0; i < torrent.files.length; i++) {
+    const file = torrent.files[i];
+    if (!(file.name.endsWith(".srt") || file.name.endsWith(".vtt"))) {
+      continue;
+    }
+    if (file.length >= largest) {
+      largest = file.length;
+      found = file;
+    }
+  }
+  if (found !== null) {
+    return found;
+  }
+  await new Promise((resolve) => setTimeout(resolve, iterationTimeout));
+  return findVideoFile(torrent, maxWaitTime, ++iterations);
 }
 
 export default async function streamToFile(client: WebTorrent.Instance, stream: Stream) {
@@ -38,15 +66,15 @@ export default async function streamToFile(client: WebTorrent.Instance, stream: 
     hash = findHash("bluray");
   }
   if (hash === null) {
-    return null;
+    return [null, null];
   }
   let torrent = client.torrents.find((torrent) => torrent.infoHash === hash) ?? null;
   if (torrent !== null) {
-    return findFile(torrent);
+    return [await findVideoFile(torrent), await findSubtitleFile(torrent)];
   }
   torrent = client.add(hash, { path: config.paths.torrents });
   if (torrent === null) {
-    return null;
+    return [null, null];
   }
-  return findFile(torrent);
+  return [await findVideoFile(torrent), await findSubtitleFile(torrent)];
 }

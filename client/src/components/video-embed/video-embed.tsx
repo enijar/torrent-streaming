@@ -19,6 +19,10 @@ export default function VideoEmbed(props: Props) {
     return `${config.apiUrl}/api/watch/${props.stream?.uuid}`;
   }, [props.stream]);
 
+  const subtitles = React.useMemo(() => {
+    return `${config.apiUrl}/api/watch/${props.stream?.uuid}?subtitles=true`;
+  }, [props.stream]);
+
   const poster = React.useMemo(() => {
     if (!props.stream?.largeCoverImage) return "";
     return asset(props.stream.largeCoverImage);
@@ -125,7 +129,9 @@ export default function VideoEmbed(props: Props) {
         onPlay={() => {
           setPlayed(true);
         }}
-      />
+      >
+        <track src={subtitles} kind="subtitles" srcLang="en" label="English" default />
+      </video>
     </VideoEmbedWrapper>
   );
 }

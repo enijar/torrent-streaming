@@ -1,16 +1,62 @@
+import fs from "node:fs";
+import path from "node:path";
 import type { Context } from "hono";
 import { stream } from "hono/streaming";
 import WebTorrent from "webtorrent";
 import Stream from "~/entities/stream.js";
 import User from "~/entities/user.js";
 import streamToFile from "~/services/stream-to-file.js";
+import config from "~/config.js";
 
 const CHUNK_SIZE = 10 ** 6; // 1MB
 
 const client = new WebTorrent();
 
+function srtToWebVtt(srt: string): string {
+  const normalized = srt
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .trim();
+  const rawCues = normalized.split(/\n{2,}/);
+  type Cue = {
+    startEnd: string;
+    text: string;
+  };
+  const cues: Cue[] = [];
+  for (const rawCue of rawCues) {
+    const lines = rawCue.split("\n").map((l) => l.trim());
+    if (!lines.length) continue;
+    let idx = 0;
+    if (/^\d+$/.test(lines[0])) {
+      idx = 1;
+    }
+    const tsIndex = lines.findIndex((line, i) => (i >= idx ? line.includes("-->") : false));
+    if (tsIndex === -1) {
+      continue;
+    }
+    const timeLine = lines[tsIndex];
+    const textLines = lines.slice(tsIndex + 1);
+    const text = textLines.join("\n").trim();
+    if (!text) continue;
+    const textLower = text.toLowerCase();
+    const isSpam =
+      textLower.includes("yts.mx") ||
+      textLower.includes("yts.ag") ||
+      textLower.includes("yify") ||
+      textLower.startsWith("downloaded from");
+    if (isSpam) continue;
+    const vttTimeLine = timeLine.replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, "$1.$2");
+    cues.push({ startEnd: vttTimeLine, text });
+  }
+  const body = cues.map((cue, i) => `${i + 1}\n${cue.startEnd}\n${cue.text}`).join("\n\n");
+  return `WEBVTT\n\n${body}\n`;
+}
+
 export default async function watch(ctx: Context, user: User) {
   try {
+    const subtitles = ctx.req.query("subtitles") !== undefined;
+
     if (ctx.req.method === "HEAD") {
       ctx.status(200);
       return ctx.body(null);
@@ -29,10 +75,15 @@ export default async function watch(ctx: Context, user: User) {
       await user.update({ streams: [...streams, uuid] });
     }
 
-    const file = await streamToFile(client, streamRecord);
+    const files = await streamToFile(client, streamRecord);
+    const file = subtitles ? files[1] : files[0];
     if (file === null) {
       ctx.status(404);
-      return ctx.text("Stream not found");
+      return ctx.text("Not found");
+    }
+    if (subtitles) {
+      const fileStream = srtToWebVtt(await fs.promises.readFile(path.join(config.paths.torrents, file.path), "utf-8"));
+      return ctx.text(fileStream);
     }
     const range = ctx.req.header("range");
     if (range === undefined) {
