@@ -42,6 +42,7 @@ export default async function updateMovies() {
   const progress = new SingleBar({}, Presets.shades_classic);
   const limit = 50;
   const concurrent = 10;
+  const maxPages = 200;
   const url = new URL("https://yts.lt/api/v2/list_movies.json");
   url.searchParams.set("sort", "download_count");
   url.searchParams.set("quality", "1080p");
@@ -88,7 +89,7 @@ export default async function updateMovies() {
   try {
     const res = await fetch(url.toString());
     const { data } = schema.parse(await res.json());
-    const pages = Math.ceil(data.movie_count / limit);
+    const pages = Math.min(Math.ceil(data.movie_count / limit), maxPages);
     progress.start(pages, 0);
     const requests = Array.from({ length: pages }).map((_, index) => {
       return () => addStreams(index + 1);
