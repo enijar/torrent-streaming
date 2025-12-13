@@ -1,7 +1,9 @@
 import { Presets, SingleBar } from "cli-progress";
 import { z, ZodError } from "zod";
 import _ from "lodash";
+import { fetch } from "undici";
 import Stream from "~/entities/stream.js";
+import agent from "~/services/agent.js";
 
 const schema = z.object({
   data: z.object({
@@ -51,7 +53,7 @@ export default async function updateMovies() {
   url.searchParams.set("page", "1");
   const addStreams = async (page: number) => {
     url.searchParams.set("page", page.toString());
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), { dispatcher: agent });
     const json = await res.json();
     const { data } = schema.parse(json);
     await Promise.all(
@@ -87,7 +89,7 @@ export default async function updateMovies() {
     );
   };
   try {
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), { dispatcher: agent });
     const { data } = schema.parse(await res.json());
     const pages = Math.min(Math.ceil(data.movie_count / limit), maxPages);
     progress.start(pages, 0);

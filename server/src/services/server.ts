@@ -3,13 +3,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { Server as SocketIOServer } from "socket.io";
 import config from "~/config.js";
-import login from "~/actions/login.js";
-import loginAdmin from "~/actions/login-admin.js";
-import loginQr from "~/actions/login-qr.js";
-import auth from "~/actions/auth.js";
-import loginWithAuthToken from "~/actions/login-with-auth-token.js";
-import authenticate from "~/middleware/authenticate.js";
-import user from "~/actions/user.js";
 import streams from "~/actions/streams.js";
 import stream from "~/actions/stream.js";
 import watch from "~/actions/watch.js";
@@ -25,15 +18,9 @@ app.use(
     credentials: true,
   }),
 );
-app.post("/api/login", login);
-app.post("/api/login/admin", loginAdmin);
-app.get("/api/login/qr/:uuid", loginQr);
-app.get("/api/auth", auth);
-app.post("/api/login-with-auth-token", loginWithAuthToken);
-app.get("/api/user", authenticate(user));
-app.get("/api/streams", authenticate(streams));
-app.get("/api/stream/:uuid", authenticate(stream));
-app.get("/api/watch/:uuid", authenticate(watch));
+app.get("/api/streams", streams);
+app.get("/api/stream/:uuid", stream);
+app.get("/api/watch/:uuid", watch);
 app.get("/api/yts/:url", ytsProxy);
 
 const server = serve({

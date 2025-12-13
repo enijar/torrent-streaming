@@ -7,8 +7,7 @@ Watch video torrents online. Streams them directly to your browser.
 ### Getting Started
 
 ```shell
-cp client/.env.example client/.env
-cp server/.env.example server/.env
+cp .env.example .env
 
 npm install
 npm start
@@ -17,9 +16,6 @@ npm start
 ### CLI Scripts
 
 ```shell
-# Add an email to the list of authorised emails
-npm --prefix server run add-authorised-email username@domain.tld
-
 # Add and update streams in database from YTS API
 npm --prefix server run update-movies
 ```
@@ -27,8 +23,7 @@ npm --prefix server run update-movies
 ### Production
 
 ```shell
-cp client/.env.example client/.env
-cp server/.env.example server/.env
+cp .env.example .env
 
 npm install
 npm run build

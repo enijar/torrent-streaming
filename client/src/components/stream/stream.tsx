@@ -12,7 +12,7 @@ export default function Stream(props: Props) {
   }, [props.largeCoverImage]);
 
   return (
-    <StreamWrapper to={`/streams/${props.uuid}`} title={props.title}>
+    <StreamWrapper to={`/${props.uuid}`} title={props.title}>
       <StreamCover>
         <img src={poster} alt={props.title} loading="lazy" />
       </StreamCover>

@@ -2,10 +2,12 @@ import * as path from "node:path";
 import { defineConfig, loadEnv, type UserConfigFn } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { config as dotenv } from "dotenv";
+
+dotenv({ path: path.resolve(__dirname, "..", ".env") });
 
 const PROJECT_ROOT = path.resolve(__dirname);
 const DEV_MODE = process.env.NODE_ENV === "development";
-const SERVER_URL = "http://0.0.0.0:3900";
 
 const config: UserConfigFn = (env) => {
   process.env = { ...process.env, ...loadEnv(env.mode, process.cwd()) };
@@ -15,12 +17,13 @@ const config: UserConfigFn = (env) => {
       host: "0.0.0.0",
       proxy: {
         "/api": {
-          target: SERVER_URL,
+          target: process.env.API_URL,
         },
         "/socket.io": {
-          target: SERVER_URL,
+          target: process.env.API_URL,
         },
       },
+      allowedHosts: (process.env.ALLOWED_HOSTS ?? "").split(","),
     },
     base: "/",
     publicDir: path.join(PROJECT_ROOT, "public"),
