@@ -1,5 +1,6 @@
 import database from "~/services/database.js";
 import "~/services/server.js";
+import "~/cron.js";
 
 database
   .sync()
