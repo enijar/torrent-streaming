@@ -4,7 +4,6 @@ import type { Context } from "hono";
 import { stream } from "hono/streaming";
 import WebTorrent from "webtorrent";
 import Stream from "~/entities/stream.js";
-import User from "~/entities/user.js";
 import streamToFile from "~/services/stream-to-file.js";
 import config from "~/config.js";
 
@@ -53,7 +52,7 @@ function srtToWebVtt(srt: string): string {
   return `WEBVTT\n\n${body}\n`;
 }
 
-export default async function watch(ctx: Context, user: User) {
+export default async function watch(ctx: Context) {
   try {
     const subtitles = ctx.req.query("subtitles") !== undefined;
 
@@ -67,12 +66,6 @@ export default async function watch(ctx: Context, user: User) {
     if (!streamRecord) {
       ctx.status(404);
       return ctx.text("404");
-    }
-
-    // Add stream to user's watch list if needed
-    const streams = user?.streams ?? [];
-    if (!streams.includes(uuid)) {
-      await user.update({ streams: [...streams, uuid] });
     }
 
     const files = await streamToFile(client, streamRecord);
