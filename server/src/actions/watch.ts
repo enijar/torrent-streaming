@@ -75,7 +75,11 @@ export default async function watch(ctx: Context) {
       return ctx.text("Not found");
     }
     if (subtitles) {
-      const fileStream = srtToWebVtt(await fs.promises.readFile(path.join(config.paths.torrents, file.path), "utf-8"));
+      const filePath = path.join(config.paths.torrents, file.path);
+      if (!fs.existsSync(filePath)) {
+        return ctx.status(404);
+      }
+      const fileStream = srtToWebVtt(await fs.promises.readFile(filePath, "utf-8"));
       return ctx.text(fileStream);
     }
     const range = ctx.req.header("range");
