@@ -52,7 +52,7 @@ export default function Stream() {
           <br />
           Stream Not Found
         </h3>
-        <StreamBack to="/streams">
+        <StreamBack to="/">
           <Chevron />
           <span>Back to Streams</span>
         </StreamBack>
@@ -61,7 +61,7 @@ export default function Stream() {
 
   return (
     <StreamWrapper>
-      <StreamBack to="/streams">
+      <StreamBack to="/">
         <Chevron />
         <span>Back to Streams</span>
       </StreamBack>
