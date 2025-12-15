@@ -14,13 +14,10 @@ export default function VideoEmbed(props: Props) {
   const interacted = appState((state) => state.interacted);
   const interactedRef = React.useRef(interacted);
   const [played, setPlayed] = React.useState(interactedRef.current);
+  const [subtitleUrl, setSubtitleUrl] = React.useState<string | null>(null);
 
   const src = React.useMemo(() => {
     return `${config.apiUrl}/api/watch/${props.stream?.uuid}`;
-  }, [props.stream]);
-
-  const subtitles = React.useMemo(() => {
-    return `${config.apiUrl}/api/watch/${props.stream?.uuid}?subtitles=true`;
   }, [props.stream]);
 
   const poster = React.useMemo(() => {
@@ -95,6 +92,31 @@ export default function VideoEmbed(props: Props) {
     screenfull.request(video).catch(console.error);
   }, []);
 
+  React.useEffect(() => {
+    const url = `${config.apiUrl}/api/watch/${props.stream?.uuid}?subtitles=true`;
+    async function updateSubtitleUrl(tries = 1) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          if (tries < 10) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * tries));
+            await updateSubtitleUrl(tries + 1);
+          }
+          return;
+        }
+        await response.text();
+        setSubtitleUrl(url);
+      } catch {
+        setSubtitleUrl(null);
+        if (tries < 10) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * tries));
+          await updateSubtitleUrl(tries + 1);
+        }
+      }
+    }
+    updateSubtitleUrl().finally();
+  }, [props.stream]);
+
   return (
     <VideoEmbedWrapper
       style={{
@@ -130,7 +152,7 @@ export default function VideoEmbed(props: Props) {
           setPlayed(true);
         }}
       >
-        <track src={subtitles} kind="subtitles" srcLang="en" label="English" default />
+        <track key={subtitleUrl} src={subtitleUrl ?? undefined} kind="subtitles" srcLang="en" label="English" default />
       </video>
     </VideoEmbedWrapper>
   );

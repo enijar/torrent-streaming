@@ -4,8 +4,8 @@ import config from "~/config.js";
 
 const MAX_QUALITY = 1080;
 
-async function findVideoFile(torrent: WebTorrent.Torrent, maxWaitTime = 10000, iterationTimeout = 50, iterations = 0) {
-  if (iterationTimeout * iterations > maxWaitTime) {
+async function findVideoFile(torrent: WebTorrent.Torrent, maxIterations = 10, iterationTimeout = 1000, iterations = 0) {
+  if (iterations >= maxIterations) {
     return null;
   }
   for (const file of torrent.files) {
@@ -14,16 +14,16 @@ async function findVideoFile(torrent: WebTorrent.Torrent, maxWaitTime = 10000, i
     }
   }
   await new Promise((resolve) => setTimeout(resolve, iterationTimeout));
-  return findVideoFile(torrent, maxWaitTime, ++iterations);
+  return findVideoFile(torrent, maxIterations, iterations, iterations + 1);
 }
 
 async function findSubtitleFile(
   torrent: WebTorrent.Torrent,
-  maxWaitTime = 10000,
-  iterationTimeout = 50,
+  maxIterations = 10,
+  iterationTimeout = 1000,
   iterations = 0,
 ) {
-  if (iterationTimeout * iterations > maxWaitTime) {
+  if (iterations >= maxIterations) {
     return null;
   }
   let largest = -1;
@@ -42,7 +42,7 @@ async function findSubtitleFile(
     return found;
   }
   await new Promise((resolve) => setTimeout(resolve, iterationTimeout));
-  return findVideoFile(torrent, maxWaitTime, ++iterations);
+  return findSubtitleFile(torrent, maxIterations, iterations, iterations + 1);
 }
 
 export default async function streamToFile(client: WebTorrent.Instance, stream: Stream) {

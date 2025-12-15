@@ -64,20 +64,18 @@ export default async function watch(ctx: Context) {
     const uuid = ctx.req.param("uuid") ?? "";
     const streamRecord = await Stream.findByPk(uuid);
     if (!streamRecord) {
-      ctx.status(404);
-      return ctx.text("404");
+      return ctx.text("Not found", 404);
     }
 
     const files = await streamToFile(client, streamRecord);
     const file = subtitles ? files[1] : files[0];
     if (file === null) {
-      ctx.status(404);
-      return ctx.text("Not found");
+      return ctx.text("Not found", 404);
     }
     if (subtitles) {
       const filePath = path.join(config.paths.torrents, file.path);
       if (!fs.existsSync(filePath)) {
-        return ctx.status(404);
+        return ctx.text("Not found", 404);
       }
       const fileStream = srtToWebVtt(await fs.promises.readFile(filePath, "utf-8"));
       return ctx.text(fileStream);
