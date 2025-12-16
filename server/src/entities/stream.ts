@@ -10,12 +10,10 @@ import { Attribute, Table } from "@sequelize/core/decorators-legacy";
     { name: "streams_year", unique: false, fields: ["year"] },
     { name: "streams_rating", unique: false, fields: ["rating"] },
     { name: "streams_duration", unique: false, fields: ["duration"] },
-    { name: "streams_genres", unique: false, fields: ["genres"] },
     { name: "streams_synopsis", unique: false, fields: ["synopsis"] },
     { name: "streams_youTubeTrailerCode", unique: false, fields: ["youTubeTrailerCode"] },
     { name: "streams_imdbCode", unique: false, fields: ["imdbCode"] },
     { name: "streams_largeCoverImage", unique: false, fields: ["largeCoverImage"] },
-    { name: "streams_torrents", unique: false, fields: ["torrents"] },
     { name: "streams_seeds", unique: false, fields: ["seeds"] },
   ],
 })
