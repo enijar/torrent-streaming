@@ -1,6 +1,7 @@
 import * as path from "node:path";
 import * as url from "node:url";
 import { config } from "dotenv";
+import database from "~/services/database.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,5 +38,12 @@ export default {
     port: parseInt(process.env.PROXY_PORT ?? "1080"),
     username: process.env.PROXY_USERNAME,
     password: process.env.PROXY_PASSWORD,
+  },
+  database: {
+    host: process.env.DATABASE_HOST,
+    port: parseInt(process.env.DATABASE_PORT ?? "3306"),
+    database: process.env.DATABASE_NAME,
+    user: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
   },
 };
