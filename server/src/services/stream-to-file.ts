@@ -1,6 +1,7 @@
 import WebTorrent from "webtorrent";
 import Stream from "~/entities/stream.js";
 import config from "~/config.js";
+import { getOrAddTorrent } from "~/services/torrent-manager.js";
 
 const MAX_QUALITY = 1080;
 
@@ -68,12 +69,8 @@ export default async function streamToFile(client: WebTorrent.Instance, stream: 
   if (hash === null) {
     return [null, null];
   }
-  let torrent = client.torrents.find((torrent) => torrent.infoHash === hash) ?? null;
-  if (torrent !== null) {
-    torrent.files.forEach((file) => file.deselect());
-    return [await findVideoFile(torrent), await findSubtitleFile(torrent)];
-  }
-  torrent = client.add(hash, { path: config.paths.torrents });
+  // Use torrent manager to get or add torrent (with automatic cleanup tracking)
+  const torrent = getOrAddTorrent(client, hash, { path: config.paths.torrents });
   if (torrent === null) {
     return [null, null];
   }

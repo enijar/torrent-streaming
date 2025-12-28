@@ -85,10 +85,11 @@ pm2 save
    - User clicks play → `GET /api/watch/:uuid`
    - `server/src/actions/watch.ts` uses `services/stream-to-file.ts`:
      - Finds highest quality torrent (≤1080p, prefers "web" over "bluray")
-     - Adds torrent to WebTorrent client if not already downloading
+     - Uses `services/torrent-manager.ts` to get or add torrent with automatic cleanup tracking
      - Waits for MP4 file to be discovered (retries with timeout)
      - Streams video with HTTP Range requests (206 Partial Content)
      - Extracts and converts SRT subtitles to WebVTT if available
+   - Torrent manager automatically cleans up inactive torrents after 1 hour of inactivity
 
 ### Key Architectural Patterns
 
@@ -122,6 +123,7 @@ pm2 save
 | `server/src/index.ts` | Server entry point - syncs DB, starts HTTP/Socket.IO |
 | `server/src/services/server.ts` | Hono app with routes + Socket.IO setup |
 | `server/src/services/database.ts` | Sequelize MySQL connection |
+| `server/src/services/torrent-manager.ts` | WebTorrent lifecycle management - automatic cleanup of inactive torrents |
 | `server/src/services/stream-to-file.ts` | WebTorrent integration - torrent → video file |
 | `server/src/services/update-movies.ts` | YTS API sync logic |
 | `server/src/actions/watch.ts` | Video streaming endpoint with Range requests |
@@ -133,6 +135,16 @@ pm2 save
 | `client/src/components/video-embed/video-embed.tsx` | HTML5 video player |
 
 ## Important Implementation Details
+
+### WebTorrent Memory Management
+The `torrent-manager.ts` service automatically manages torrent lifecycle to prevent memory leaks:
+- Tracks last access time for each torrent by infoHash
+- Runs cleanup every 10 minutes to destroy torrents inactive for 1+ hour
+- Sets max event listeners to 50 (prevents EventEmitter warnings)
+- Properly destroys torrents with `destroyStore: true` to free disk space
+- Reuses existing torrents if the same movie is requested multiple times
+
+Without this manager, torrents accumulate indefinitely and cause EventEmitter memory leaks (MaxListenersExceededWarning on SSDP).
 
 ### WebTorrent File Discovery
 The `findVideoFile()` and `findSubtitleFile()` functions in `stream-to-file.ts` poll for files with retries because WebTorrent doesn't immediately expose files after adding a torrent. Don't remove this retry logic.

@@ -6,10 +6,13 @@ import WebTorrent from "webtorrent";
 import Stream from "~/entities/stream.js";
 import streamToFile from "~/services/stream-to-file.js";
 import config from "~/config.js";
+import { initializeTorrentManager } from "~/services/torrent-manager.js";
 
 const CHUNK_SIZE = 10 ** 6; // 1MB
 
 const client = new WebTorrent();
+
+initializeTorrentManager(client);
 
 function srtToWebVtt(srt: string): string {
   const normalized = srt
