@@ -25,9 +25,8 @@ export default function App() {
       <AppReset />
       <React.Suspense fallback={<Loading />}>
         <Routes>
-          <Route path="/" element={<Streams />}>
-            <Route path=":uuid" element={<Stream />} />
-          </Route>
+          <Route path="/" element={<Streams />} />
+          <Route path="/:uuid" element={<Stream />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </React.Suspense>
