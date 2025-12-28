@@ -30,7 +30,10 @@ function request(endpoint: string, method: Method, data?: any): Request {
           status: res.status,
         };
       } catch (err) {
-        console.error(err);
+        // Don't log AbortErrors - they're expected when requests are cancelled
+        if (err instanceof Error && err.name !== "AbortError") {
+          console.error(err);
+        }
         return {
           data: {},
           messages: {},

@@ -4,6 +4,7 @@ import { StreamWrapper } from "@/components/stream/stream.styles";
 export const StreamsListWrapper = styled.div`
   --cols: 5;
   width: 100%;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(200px, 1fr));
   justify-content: center;

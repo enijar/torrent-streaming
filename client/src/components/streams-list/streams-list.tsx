@@ -36,16 +36,15 @@ export default function StreamsList(props: Props) {
       onLoadingRef.current(true);
     }
 
-    if (requestRef.current !== null) {
-      requestRef.current.abort();
-    }
-
     const req = api.get(`/api/streams?page=${props.page}&q=${props.query}`);
     requestRef.current = req;
 
     req.send().then((res) => {
       if (res.status === 401) return navigate("/");
-      const streams = res.data.streams ?? [];
+
+      // For aborted requests or errors, just use empty array
+      const streams = (!res.ok && res.status === 500) ? [] : (res.data.streams ?? []);
+
       if (props.query !== lastQueryRef.current) {
         setStreams(streams);
       } else {
@@ -66,7 +65,7 @@ export default function StreamsList(props: Props) {
         });
       }
     });
-  }, [props.page, props.query]);
+  }, [props.page, props.query, navigate]);
 
   React.useEffect(() => {
     loadingRef.current = false;

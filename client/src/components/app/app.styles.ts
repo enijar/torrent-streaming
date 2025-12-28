@@ -23,14 +23,6 @@ export const AppReset = createGlobalStyle`
     color: inherit;
   }
 
-  html,
-  body,
-  #root,
-  main {
-    width: 100%;
-    height: 100%;
-  }
-
   html {
     font-size: clamp(var(--root-min), var(--root-size), var(--root-max));
     font-family: system-ui, Arial, sans-serif;
@@ -39,12 +31,9 @@ export const AppReset = createGlobalStyle`
     line-height: 1em;
     color: var(--color-light);
     background-color: var(--color-dark);
-    overflow: hidden;
-  }
-
-  main {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
   }
 
   a {
