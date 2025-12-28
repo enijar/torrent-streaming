@@ -17,27 +17,21 @@ export default async function streams(ctx: Context) {
     seeds: {
       [Op.gt]: 0,
     },
-    // [Op.and]: ["Documentary", "Music", "Comedy", "Sport", "Reality-TV", "Musical"].map((genre) =>
-    //   sql.where(sql.fn("json_contains", sql.col("genres"), JSON.stringify(genre)), 0),
-    // ),
   };
 
   // Add full-text search if query is provided
   if (q.length > 0) {
     // Use full-text search for better performance with indexed title column
     const escapedQuery = q.replace(/'/g, "''");
-    query[Op.and] = [
+    (query as any)[Op.and] = [
       sql`MATCH(title) AGAINST(${escapedQuery} IN NATURAL LANGUAGE MODE)`,
     ];
   }
 
   const order: FindOptions["order"] = [
-    ["seeds", "desc"],
+    ["popularity", "desc"],
     ["rating", "desc"],
     ["year", "desc"],
-    // ["year", "desc"],
-    // ["rating", "desc"],
-    // ["seeds", "desc"],
   ];
 
   const streams = await Stream.findAll({

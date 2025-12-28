@@ -4,6 +4,7 @@ import _ from "lodash";
 import { fetch } from "undici";
 import Stream from "~/entities/stream.js";
 import agent from "~/services/agent.js";
+import { downloadTMDbExport, findMovieInExport, type TMDbExportMovie } from "~/services/tmdb-export.js";
 
 const schema = z.object({
   data: z.object({
@@ -43,8 +44,19 @@ const schema = z.object({
 export default async function updateMovies() {
   const progress = new SingleBar({}, Presets.shades_classic);
   const limit = 50;
+  // Download TMDb export file once at the start (no rate limits!)
   const concurrent = 10;
   const maxPages = Infinity;
+
+  console.log("Downloading TMDb daily export file...");
+  let tmdbExportData: Map<string, TMDbExportMovie>;
+  try {
+    tmdbExportData = await downloadTMDbExport();
+  } catch (err) {
+    console.error("Failed to download TMDb export, continuing without popularity data:", err);
+    tmdbExportData = new Map();
+  }
+
   const url = new URL("https://yts.lt/api/v2/list_movies.json");
   url.searchParams.set("sort", "download_count");
   url.searchParams.set("quality", "1080p");
@@ -56,6 +68,7 @@ export default async function updateMovies() {
     const res = await fetch(url.toString(), { dispatcher: agent });
     const json = await res.json();
     const { data } = schema.parse(json);
+
     await Promise.all(
       data.movies.map((movie) => {
         let seeds = 0;
@@ -71,9 +84,16 @@ export default async function updateMovies() {
             size: torrent.size_bytes,
           };
         });
+
+        // Look up TMDb data from export file by title
+        const movieTitle = movie.title ?? movie.title_english ?? movie.title_long ?? "";
+        const tmdbData = findMovieInExport(tmdbExportData, movieTitle);
+
         return Stream.upsert({
           apiId: movie.id,
-          title: movie.title ?? movie.title_english ?? movie.title_long ?? "",
+          tmdbId: tmdbData?.id ?? null,
+          popularity: tmdbData?.popularity ?? 0,
+          title: movieTitle,
           year: movie.year,
           rating: movie.rating,
           duration: movie.runtime,

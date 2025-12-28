@@ -6,6 +6,8 @@ import { Attribute, Table } from "@sequelize/core/decorators-legacy";
   indexes: [
     { name: "streams_uuid", unique: true, fields: ["uuid"] },
     { name: "streams_apiId", unique: true, fields: ["apiId"] },
+    { name: "streams_tmdbId", unique: false, fields: ["tmdbId"] },
+    { name: "streams_popularity", unique: false, fields: ["popularity"] },
     { name: "streams_title", unique: false, fields: ["title"] },
     { name: "streams_year", unique: false, fields: ["year"] },
     { name: "streams_rating", unique: false, fields: ["rating"] },
@@ -15,10 +17,10 @@ import { Attribute, Table } from "@sequelize/core/decorators-legacy";
     { name: "streams_imdbCode", unique: false, fields: ["imdbCode"] },
     { name: "streams_largeCoverImage", unique: false, fields: ["largeCoverImage"] },
     { name: "streams_seeds", unique: false, fields: ["seeds"] },
-    // Composite index for sorting - matches ORDER BY (seeds DESC, rating DESC, year DESC)
-    { name: "streams_sort_composite", unique: false, fields: [{ name: "seeds", order: "DESC" }, { name: "rating", order: "DESC" }, { name: "year", order: "DESC" }] },
+    // Composite index for sorting - matches ORDER BY (popularity DESC, rating DESC, year DESC)
+    { name: "streams_sort_composite", unique: false, fields: [{ name: "popularity", order: "DESC" }, { name: "rating", order: "DESC" }, { name: "year", order: "DESC" }] },
     // Composite index for filtering - covers WHERE clause columns
-    { name: "streams_filter_composite", unique: false, fields: ["year", "rating", "seeds"] },
+    { name: "streams_filter_composite", unique: false, fields: ["year", "rating", "seeds", "popularity"] },
     // Full-text index for title search
     { name: "streams_title_fulltext", type: "FULLTEXT", fields: ["title"] },
   ],
@@ -29,6 +31,12 @@ export default class Stream extends Model<InferAttributes<Stream>, InferCreation
 
   @Attribute({ type: DataTypes.INTEGER, allowNull: false })
   declare apiId: number;
+
+  @Attribute({ type: DataTypes.INTEGER, allowNull: true })
+  declare tmdbId: number | null;
+
+  @Attribute({ type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0 })
+  declare popularity: number;
 
   @Attribute({ type: DataTypes.STRING, allowNull: false })
   declare title: string;

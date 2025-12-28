@@ -5,7 +5,8 @@
     "start": "tsx watch src/index.ts",
     "build": "./bin/build.sh",
     "cli": "tsx src/cli.ts",
-    "cron": "tsx src/cron.ts"
+    "cron": "tsx src/cron.ts",
+    "update-movies": "tsx scripts/update-movies.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.19.7",

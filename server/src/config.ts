@@ -24,6 +24,9 @@ export default {
   webtorrent: {
     port: process.env.WEBTORRENT_PORT ?? "9999",
   },
+  tmdb: {
+    apiKey: process.env.TMDB_API_KEY ?? "",
+  },
   torrentTrackers: [
     "udp://tracker.coppersurfer.tk:6969/announce",
     "udp://9.rarbg.to:2920/announce",
