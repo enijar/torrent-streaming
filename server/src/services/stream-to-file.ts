@@ -70,11 +70,13 @@ export default async function streamToFile(client: WebTorrent.Instance, stream: 
   }
   let torrent = client.torrents.find((torrent) => torrent.infoHash === hash) ?? null;
   if (torrent !== null) {
+    torrent.files.forEach((file) => file.deselect());
     return [await findVideoFile(torrent), await findSubtitleFile(torrent)];
   }
   torrent = client.add(hash, { path: config.paths.torrents });
   if (torrent === null) {
     return [null, null];
   }
+  torrent.files.forEach((file) => file.deselect());
   return [await findVideoFile(torrent), await findSubtitleFile(torrent)];
 }

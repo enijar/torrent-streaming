@@ -1,4 +1,4 @@
-import { type FindOptions, Op } from "@sequelize/core";
+import { type FindOptions, Op, sql } from "@sequelize/core";
 import type { Context } from "hono";
 import Stream from "~/entities/stream.js";
 import paginate from "~/services/paginate.js";
@@ -17,6 +17,9 @@ export default async function streams(ctx: Context) {
     seeds: {
       [Op.gt]: 0,
     },
+    // [Op.and]: ["Documentary", "Music", "Comedy", "Sport", "Reality-TV", "Musical"].map((genre) =>
+    //   sql.where(sql.fn("json_contains", sql.col("genres"), JSON.stringify(genre)), 0),
+    // ),
   };
 
   if (q.length > 0) {
@@ -31,6 +34,9 @@ export default async function streams(ctx: Context) {
     ["seeds", "desc"],
     ["rating", "desc"],
     ["year", "desc"],
+    // ["year", "desc"],
+    // ["rating", "desc"],
+    // ["seeds", "desc"],
   ];
 
   const streams = await Stream.findAll({
