@@ -15,6 +15,12 @@ import { Attribute, Table } from "@sequelize/core/decorators-legacy";
     { name: "streams_imdbCode", unique: false, fields: ["imdbCode"] },
     { name: "streams_largeCoverImage", unique: false, fields: ["largeCoverImage"] },
     { name: "streams_seeds", unique: false, fields: ["seeds"] },
+    // Composite index for sorting - matches ORDER BY (seeds DESC, rating DESC, year DESC)
+    { name: "streams_sort_composite", unique: false, fields: [{ name: "seeds", order: "DESC" }, { name: "rating", order: "DESC" }, { name: "year", order: "DESC" }] },
+    // Composite index for filtering - covers WHERE clause columns
+    { name: "streams_filter_composite", unique: false, fields: ["year", "rating", "seeds"] },
+    // Full-text index for title search
+    { name: "streams_title_fulltext", type: "FULLTEXT", fields: ["title"] },
   ],
 })
 export default class Stream extends Model<InferAttributes<Stream>, InferCreationAttributes<Stream>> {

@@ -7,7 +7,7 @@ export default async function streams(ctx: Context) {
   const { limit, offset } = paginate(ctx);
   const q = (ctx.req.query("q") ?? "").trim();
 
-  let query: FindOptions["where"] = {
+  const query: FindOptions["where"] = {
     year: {
       [Op.lte]: new Date().getFullYear(),
     },
@@ -22,12 +22,13 @@ export default async function streams(ctx: Context) {
     // ),
   };
 
+  // Add full-text search if query is provided
   if (q.length > 0) {
-    query = {
-      title: {
-        [Op.like]: `%${q.replace(/\s+/g, "%")}%`,
-      },
-    };
+    // Use full-text search for better performance with indexed title column
+    const escapedQuery = q.replace(/'/g, "''");
+    query[Op.and] = [
+      sql`MATCH(title) AGAINST(${escapedQuery} IN NATURAL LANGUAGE MODE)`,
+    ];
   }
 
   const order: FindOptions["order"] = [
