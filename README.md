@@ -1,3 +1,5 @@
+> Deprecated. Use the new version here [torrents](https://github.com/enijar/torrents)
+
 # 🍿 Torrent Streaming
 
 Watch video torrents online. Streams them directly to your browser.
